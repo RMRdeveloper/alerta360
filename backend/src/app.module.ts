@@ -1,0 +1,39 @@
+import { Module } from '@nestjs/common';
+import { MongooseModule } from '@nestjs/mongoose';
+import { ThrottlerModule, ThrottlerGuard } from '@nestjs/throttler';
+import { APP_GUARD } from '@nestjs/core';
+import { AppController } from './app.controller';
+import { AppService } from './app.service';
+import { ServeStaticModule } from '@nestjs/serve-static';
+import { join } from 'path';
+import { StorageModule } from './storage/storage.module';
+import { MissingPersonsModule } from './missing-persons/missing-persons.module';
+import { SightingsModule } from './sightings/sightings.module';
+import { ChildrenModule } from './children/children.module';
+
+@Module({
+  imports: [
+    MongooseModule.forRoot('mongodb://localhost/360alert'),
+    ServeStaticModule.forRoot({
+      rootPath: join(process.cwd(), 'storage'),
+      serveRoot: '/storage',
+    }),
+    ThrottlerModule.forRoot([{
+      ttl: 60000,
+      limit: 10,
+    }]),
+    StorageModule,
+    MissingPersonsModule,
+    SightingsModule,
+    ChildrenModule,
+  ],
+  controllers: [AppController],
+  providers: [
+    AppService,
+    {
+      provide: APP_GUARD,
+      useClass: ThrottlerGuard,
+    },
+  ],
+})
+export class AppModule { }

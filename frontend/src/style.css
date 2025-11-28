@@ -1,0 +1,77 @@
+@import "tailwindcss";
+
+:root {
+  /* Modern Palette - High Contrast */
+  --color-primary: #d61f4d;
+  /* Darker Pink/Red for better contrast with white */
+  --color-primary-dark: #a8163a;
+  --color-secondary: #2d3436;
+  /* Dark Grey */
+  --color-secondary-light: #636e72;
+  --color-accent: #00b894;
+  /* Mint Green */
+  --color-background: #f8f9fa;
+  --color-surface: #ffffff;
+  --color-text: #2d3436;
+  --color-text-light: #636e72;
+  --color-border: #dfe6e9;
+
+  /* Gradients */
+  --gradient-primary: linear-gradient(135deg, #d61f4d 0%, #ff3366 100%);
+  --gradient-dark: linear-gradient(135deg, #2d3436 0%, #636e72 100%);
+}
+
+body {
+  font-family: 'Outfit', 'Inter', system-ui, -apple-system, sans-serif;
+  background-color: var(--color-background);
+  color: var(--color-text);
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Custom Utilities for Tailwind v4 */
+.bg-primary {
+  background-color: var(--color-primary);
+}
+
+.bg-primary-gradient {
+  background: var(--gradient-primary);
+}
+
+.bg-surface {
+  background-color: var(--color-surface);
+}
+
+.bg-background {
+  background-color: var(--color-background);
+}
+
+.text-primary {
+  color: var(--color-primary);
+}
+
+.text-secondary {
+  color: var(--color-secondary);
+}
+
+.text-light {
+  color: var(--color-text-light);
+}
+
+.border-border {
+  border-color: var(--color-border);
+}
+
+/* Modern Form Elements */
+input,
+select,
+textarea {
+  transition: all 0.3s ease;
+}
+
+input:focus,
+select:focus,
+textarea:focus {
+  border-color: var(--color-primary);
+  box-shadow: 0 0 0 4px rgba(214, 31, 77, 0.1);
+  outline: none;
+}
