@@ -11,6 +11,16 @@ export interface MissingPerson {
   reporterId: string;
   createdAt: string;
   updatedAt: string;
+  height?: {
+    value: number;
+    unit: string;
+  };
+  hair?: {
+    color: string;
+    length: string;
+  };
+  eyes?: string;
+  build?: string;
   coordinates?: {
     type: string;
     coordinates: number[];

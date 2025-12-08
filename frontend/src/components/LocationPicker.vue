@@ -149,7 +149,7 @@ onMounted(() => {
 <template>
   <div class="space-y-4">
     <div class="flex items-center justify-between">
-      <label class="block text-sm font-semibold text-secondary">{{ $t('location.selection') }}</label>
+      <label class="block text-sm font-semibold text-secondary">{{ $t('location.selection') }} <span class="text-primary">*</span></label>
       <button 
         type="button"
         @click="getCurrentLocation"

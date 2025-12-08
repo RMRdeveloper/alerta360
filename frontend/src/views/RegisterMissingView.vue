@@ -18,7 +18,16 @@ const form = ref({
   description: '',
   reporterId: 'guest-user',
   coordinates: null as { type: string; coordinates: number[] } | null,
+  height: { value: null as number | null, unit: 'cm' },
+  hair: { color: '', length: '' },
+  eyes: '',
+  build: '',
 });
+
+const hairColors = ['black', 'brown', 'blonde', 'red', 'gray', 'bald', 'other'];
+const hairLengths = ['short', 'medium', 'long', 'bald'];
+const eyeColors = ['brown', 'blue', 'green', 'hazel', 'gray', 'other'];
+const buildTypes = ['slender', 'athletic', 'average', 'heavy', 'obese'];
 
 const photoFiles = ref<File[]>([]);
 const photoPreviews = ref<string[]>([]);
@@ -68,6 +77,22 @@ const submitForm = async () => {
     formData.append('description', form.value.description);
     formData.append('reporterId', form.value.reporterId);
     
+    if (form.value.height.value) {
+      formData.append('height', JSON.stringify(form.value.height));
+    }
+    
+    if (form.value.hair.color || form.value.hair.length) {
+      formData.append('hair', JSON.stringify(form.value.hair));
+    }
+
+    if (form.value.eyes) {
+      formData.append('eyes', form.value.eyes);
+    }
+
+    if (form.value.build) {
+      formData.append('build', form.value.build);
+    }
+
     if (form.value.coordinates) {
       formData.append('coordinates', JSON.stringify(form.value.coordinates));
     }
@@ -109,7 +134,7 @@ const submitForm = async () => {
         
         <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
           <div class="space-y-2">
-            <label class="block text-sm font-semibold text-secondary">{{ $t('form.name') }}</label>
+            <label class="block text-sm font-semibold text-secondary">{{ $t('form.name') }} <span class="text-primary">*</span></label>
             <input 
               v-model="form.name" 
               type="text" 
@@ -121,7 +146,7 @@ const submitForm = async () => {
 
           <div class="grid grid-cols-2 gap-4">
             <div class="space-y-2">
-              <label class="block text-sm font-semibold text-secondary">{{ $t('form.age') }}</label>
+              <label class="block text-sm font-semibold text-secondary">{{ $t('form.age') }} <span class="text-primary">*</span></label>
               <input 
                 v-model="form.age" 
                 type="number" 
@@ -131,7 +156,7 @@ const submitForm = async () => {
               />
             </div>
             <div class="space-y-2">
-              <label class="block text-sm font-semibold text-secondary">{{ $t('form.gender') }}</label>
+              <label class="block text-sm font-semibold text-secondary">{{ $t('form.gender') }} <span class="text-primary">*</span></label>
               <select 
                 v-model="form.gender"
                 class="w-full px-5 py-3 bg-background border border-border rounded-xl focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all appearance-none"
@@ -141,6 +166,74 @@ const submitForm = async () => {
                 <option value="Other">{{ $t('form.other') }}</option>
               </select>
             </div>
+          </div>
+        </div>
+
+        <h4 class="text-lg font-bold text-secondary mt-6 mb-4">{{ $t('detail.keyInfo') }} ({{ $t('form.optional') }})</h4>
+        
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div class="space-y-2">
+            <label class="block text-sm font-semibold text-secondary">{{ $t('form.height') }}</label>
+            <div class="flex gap-2">
+              <input 
+                v-model="form.height.value" 
+                type="number" 
+                step="0.01"
+                :placeholder="$t('form.height')"
+                class="w-full px-5 py-3 bg-background border border-border rounded-xl focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all"
+              />
+              <select 
+                v-model="form.height.unit"
+                class="w-24 px-3 py-3 bg-background border border-border rounded-xl focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all cursor-pointer"
+              >
+                <option value="cm">CM</option>
+                <option value="ft">FT</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="space-y-2">
+            <label class="block text-sm font-semibold text-secondary">{{ $t('form.build') }}</label>
+            <select 
+              v-model="form.build"
+              class="w-full px-5 py-3 bg-background border border-border rounded-xl focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all appearance-none"
+            >
+              <option value="" disabled>{{ $t('form.selectOption') }}</option>
+              <option v-for="type in buildTypes" :key="type" :value="type">{{ $t(`attributes.build.${type}`) }}</option>
+            </select>
+          </div>
+
+          <div class="space-y-2">
+            <label class="block text-sm font-semibold text-secondary">{{ $t('form.hairColor') }}</label>
+            <select 
+              v-model="form.hair.color"
+              class="w-full px-5 py-3 bg-background border border-border rounded-xl focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all appearance-none"
+            >
+              <option value="" disabled>{{ $t('form.selectOption') }}</option>
+              <option v-for="color in hairColors" :key="color" :value="color">{{ $t(`attributes.hair.${color}`) }}</option>
+            </select>
+          </div>
+
+          <div class="space-y-2">
+            <label class="block text-sm font-semibold text-secondary">{{ $t('form.hairLength') }}</label>
+            <select 
+              v-model="form.hair.length"
+              class="w-full px-5 py-3 bg-background border border-border rounded-xl focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all appearance-none"
+            >
+              <option value="" disabled>{{ $t('form.selectOption') }}</option>
+              <option v-for="length in hairLengths" :key="length" :value="length">{{ $t(`attributes.length.${length}`) }}</option>
+            </select>
+          </div>
+
+          <div class="space-y-2">
+            <label class="block text-sm font-semibold text-secondary">{{ $t('form.eyes') }}</label>
+            <select 
+              v-model="form.eyes"
+              class="w-full px-5 py-3 bg-background border border-border rounded-xl focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all appearance-none"
+            >
+              <option value="" disabled>{{ $t('form.selectOption') }}</option>
+              <option v-for="color in eyeColors" :key="color" :value="color">{{ $t(`attributes.eyes.${color}`) }}</option>
+            </select>
           </div>
         </div>
       </div>
@@ -164,7 +257,7 @@ const submitForm = async () => {
           <input type="hidden" v-model="form.lastSeenLocation" required />
 
           <div class="space-y-2">
-            <label class="block text-sm font-semibold text-secondary">{{ $t('missing.lastSeen') }} ({{ $t('report.dateTime') }})</label>
+            <label class="block text-sm font-semibold text-secondary">{{ $t('missing.lastSeen') }} ({{ $t('report.dateTime') }}) <span class="text-primary">*</span></label>
             <VueDatePicker 
               v-model="form.lastSeenDate" 
               :enable-time-picker="true"

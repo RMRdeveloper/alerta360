@@ -353,6 +353,31 @@ const getPhotoUrl = (photoPath?: string) => {
               <label class="block text-sm font-semibold text-light mb-1">{{ $t('form.gender') }}</label>
               <p class="text-2xl font-bold text-secondary">{{ $t('form.' + person.gender.toLowerCase()) }}</p>
             </div>
+            
+            <div v-if="person.height && person.height.value">
+              <label class="block text-sm font-semibold text-light mb-1">{{ $t('form.height') }}</label>
+              <p class="text-2xl font-bold text-secondary">{{ person.height.value }} <span class="text-sm font-normal text-light">{{ person.height.unit.toUpperCase() }}</span></p>
+            </div>
+
+            <div v-if="person.build">
+              <label class="block text-sm font-semibold text-light mb-1">{{ $t('form.build') }}</label>
+              <p class="text-2xl font-bold text-secondary capitalize">{{ $t('attributes.build.' + person.build) }}</p>
+            </div>
+
+            <div v-if="person.hair">
+              <label class="block text-sm font-semibold text-light mb-1">{{ $t('form.hair') }}</label>
+              <p class="text-lg font-bold text-secondary capitalize">
+                <span v-if="person.hair.color">{{ $t('attributes.hair.' + person.hair.color) }}</span>
+                <span v-if="person.hair.color && person.hair.length">, </span>
+                <span v-if="person.hair.length">{{ $t('attributes.length.' + person.hair.length) }}</span>
+              </p>
+            </div>
+
+            <div v-if="person.eyes">
+              <label class="block text-sm font-semibold text-light mb-1">{{ $t('form.eyes') }}</label>
+              <p class="text-2xl font-bold text-secondary capitalize">{{ $t('attributes.eyes.' + person.eyes) }}</p>
+            </div>
+
             <div class="col-span-2">
               <label class="block text-sm font-semibold text-light mb-1">{{ $t('missing.lastSeen') }}</label>
               <div class="flex items-center gap-2 text-secondary">
