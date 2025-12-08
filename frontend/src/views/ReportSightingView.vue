@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { ref, onMounted } from 'vue';
-import { useRouter } from 'vue-router';
+import { useRoute, useRouter } from 'vue-router';
 import { useI18n } from 'vue-i18n';
 import api from '../services/api';
 import type { MissingPerson } from '../types';
@@ -9,6 +9,7 @@ import MissingPersonSelector from '../components/MissingPersonSelector.vue';
 import { VueDatePicker } from '@vuepic/vue-datepicker';
 
 const router = useRouter();
+const route = useRoute();
 const { t } = useI18n();
 
 const form = ref({
@@ -30,6 +31,14 @@ onMounted(async () => {
   try {
     const response = await api.get('/missing-persons');
     people.value = response.data;
+    
+    // Auto-select if passed in query
+    if (route.query.personId) {
+      const personId = route.query.personId as string;
+      if (people.value.some(p => p._id === personId)) {
+        form.value.missingPersonId = personId;
+      }
+    }
   } catch (error) {
     console.error('Error fetching people:', error);
   }
