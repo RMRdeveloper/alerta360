@@ -31,9 +31,43 @@ export class CreateMissingPersonDto {
   @IsOptional()
   photos?: string[];
 
-  @IsString()
   @IsOptional()
+  @IsString()
   reporterId?: string;
+
+  @IsOptional()
+  @Transform(({ value }) => {
+    if (typeof value === 'string') {
+      try {
+        return JSON.parse(value);
+      } catch {
+        return value;
+      }
+    }
+    return value;
+  })
+  height?: { value: number; unit: string };
+
+  @IsOptional()
+  @Transform(({ value }) => {
+    if (typeof value === 'string') {
+      try {
+        return JSON.parse(value);
+      } catch {
+        return value;
+      }
+    }
+    return value;
+  })
+  hair?: { color: string; length: string };
+
+  @IsOptional()
+  @IsString()
+  eyes?: string;
+
+  @IsOptional()
+  @IsString()
+  build?: string;
 
   @IsOptional()
   @Transform(({ value }) => {

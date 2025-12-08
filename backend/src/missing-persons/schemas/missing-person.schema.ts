@@ -33,6 +33,30 @@ export class MissingPerson {
   reporterId?: string; // Optional now that auth is removed
 
   @Prop({
+    type: {
+      value: { type: Number },
+      unit: { type: String, enum: ['cm', 'ft'], default: 'cm' },
+    },
+    _id: false,
+  })
+  height?: { value: number; unit: string };
+
+  @Prop({
+    type: {
+      color: { type: String },
+      length: { type: String },
+    },
+    _id: false,
+  })
+  hair?: { color: string; length: string };
+
+  @Prop()
+  eyes?: string;
+
+  @Prop()
+  build?: string;
+
+  @Prop({
     type: { type: String, enum: ['Point'], default: 'Point' },
     coordinates: { type: [Number], index: '2dsphere' },
   })
