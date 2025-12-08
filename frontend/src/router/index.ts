@@ -1,5 +1,11 @@
 import { createRouter, createWebHistory } from 'vue-router';
 import HomeView from '../views/HomeView.vue';
+import MissingPersonsView from '../views/MissingPersonsView.vue';
+import MissingPersonDetailView from '../views/MissingPersonDetailView.vue';
+import RegisterMissingView from '../views/RegisterMissingView.vue';
+import RegisterChildView from '../views/RegisterChildView.vue';
+import ReportSightingView from '../views/ReportSightingView.vue';
+import RiskMapView from '../views/RiskMapView.vue';
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -10,35 +16,39 @@ const router = createRouter({
       component: HomeView,
     },
     {
-      path: '/missing',
-      name: 'missing',
-      component: () => import('../views/MissingPersonsView.vue'),
+      path: '/missing-persons',
+      name: 'missing-persons',
+      component: MissingPersonsView,
     },
     {
-      path: '/missing/:id',
-      name: 'missing-detail',
-      component: () => import('../views/MissingPersonDetailView.vue'),
+      path: '/missing-persons/:id',
+      name: 'missing-person-detail',
+      component: MissingPersonDetailView,
     },
     {
-      path: '/register',
-      name: 'register',
-      component: () => import('../views/RegisterMissingView.vue'),
-    },
-    {
-      path: '/report-sighting',
-      name: 'report-sighting',
-      component: () => import('../views/ReportSightingView.vue'),
+      path: '/register-missing',
+      name: 'register-missing',
+      component: RegisterMissingView,
     },
     {
       path: '/register-child',
       name: 'register-child',
-      component: () => import('../views/RegisterChildView.vue'),
+      component: RegisterChildView,
+    },
+    {
+      path: '/report-sighting',
+      name: 'report-sighting',
+      component: ReportSightingView,
     },
     {
       path: '/risk-map',
       name: 'risk-map',
-      component: () => import('../views/RiskMapView.vue'),
+      component: RiskMapView,
     },
+    {
+      path: '/:pathMatch(.*)*',
+      redirect: '/'
+    }
   ],
 });
 

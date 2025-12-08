@@ -87,7 +87,7 @@ const getPhotoUrl = (photoPath?: string) => {
       <!-- Action Button -->
       <div class="mt-6 pt-4 border-t border-border">
         <router-link 
-          :to="'/missing/' + person._id" 
+          :to="'/missing-persons/' + person._id" 
           class="flex items-center justify-center gap-2 w-full py-3 bg-white border-2 border-primary text-primary font-bold rounded-xl hover:bg-primary hover:text-white transition-all duration-300 group-hover:shadow-lg group-hover:shadow-primary/20"
         >
           {{ $t('missing.details') }}

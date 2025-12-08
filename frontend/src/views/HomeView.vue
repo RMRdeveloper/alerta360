@@ -44,7 +44,7 @@ onMounted(async () => {
         
         <div class="flex flex-wrap gap-4 pt-4">
           <router-link 
-            to="/missing" 
+            to="/missing-persons" 
             class="px-8 py-4 bg-primary-gradient text-white font-bold rounded-2xl shadow-lg shadow-primary/30 hover:shadow-primary/40 hover:-translate-y-1 transition-all duration-300"
           >
             {{ $t('nav.missing') }}

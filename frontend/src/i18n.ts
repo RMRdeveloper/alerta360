@@ -131,6 +131,15 @@ const messages = {
     },
     alerts: {
       reportSuccess: 'Sighting reported successfully!',
+    },
+    share: {
+      title: 'Share Profile',
+      copyLink: 'Copy Link',
+      copied: 'Copied!',
+      whatsapp: 'WhatsApp',
+      facebook: 'Facebook',
+      twitter: 'X (Twitter)',
+      instagram: 'Instagram',
     }
   },
   es: {
@@ -264,6 +273,15 @@ const messages = {
     },
     alerts: {
       reportSuccess: '¡Avistamiento reportado exitosamente!',
+    },
+    share: {
+      title: 'Compartir Perfil',
+      copyLink: 'Copiar Enlace',
+      copied: '¡Copiado!',
+      whatsapp: 'WhatsApp',
+      facebook: 'Facebook',
+      twitter: 'X (Twitter)',
+      instagram: 'Instagram',
     }
   }
 };

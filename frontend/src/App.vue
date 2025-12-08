@@ -1,7 +1,6 @@
 <script setup lang="ts">
 import { useI18n } from 'vue-i18n';
 import { ref, onMounted, onUnmounted } from 'vue';
-
 const { locale } = useI18n();
 const isScrolled = ref(false);
 
@@ -41,8 +40,8 @@ const toggleLanguage = () => {
           <router-link 
             v-for="link in [
               { to: '/', label: 'nav.home' },
-              { to: '/missing', label: 'nav.missing' },
-              { to: '/register', label: 'nav.register' },
+              { to: '/missing-persons', label: 'nav.missing' },
+              { to: '/register-missing', label: 'nav.register' },
               { to: '/report-sighting', label: 'nav.report' },
               { to: '/register-child', label: 'nav.registerChild' },
               { to: '/risk-map', label: 'nav.riskMap' }
