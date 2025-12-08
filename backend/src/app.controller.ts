@@ -3,6 +3,9 @@ import { AppService } from './app.service';
 import { MissingPersonsService } from './missing-persons/missing-persons.service';
 import { SightingsService } from './sightings/sightings.service';
 
+import { ApiTags, ApiOperation, ApiResponse } from '@nestjs/swagger';
+
+@ApiTags('app')
 @Controller()
 export class AppController {
   constructor(
@@ -12,11 +15,14 @@ export class AppController {
   ) { }
 
   @Get()
+  @ApiOperation({ summary: 'Health check' })
   getHello(): string {
     return this.appService.getHello();
   }
 
   @Get('stats')
+  @ApiOperation({ summary: 'Get application statistics' })
+  @ApiResponse({ status: 200, description: 'Application statistics.' })
   async getStats() {
     const [missingCount, foundCount, sightingsCount] = await Promise.all([
       this.missingPersonsService.count('missing'),

@@ -5,6 +5,9 @@ import { CreateSightingDto } from './dto/create-sighting.dto';
 import { IStorageService } from '../storage/storage.interface';
 import { Express } from 'express';
 
+import { ApiTags, ApiOperation, ApiConsumes, ApiBody, ApiResponse } from '@nestjs/swagger';
+
+@ApiTags('sightings')
 @Controller('sightings')
 export class SightingsController {
   constructor(
@@ -13,6 +16,13 @@ export class SightingsController {
   ) { }
 
   @Post()
+  @ApiOperation({ summary: 'Report a sighting' })
+  @ApiConsumes('multipart/form-data')
+  @ApiBody({
+    description: 'Sighting report data',
+    type: CreateSightingDto,
+  })
+  @ApiResponse({ status: 201, description: 'The sighting has been successfully reported.' })
   @UseInterceptors(FileInterceptor('photo'))
   async create(
     @Body() createSightingDto: CreateSightingDto,
@@ -26,11 +36,15 @@ export class SightingsController {
   }
 
   @Get()
+  @ApiOperation({ summary: 'Get all sightings' })
+  @ApiResponse({ status: 200, description: 'List of all sightings.' })
   findAll() {
     return this.sightingsService.findAll();
   }
 
   @Get('person/:id')
+  @ApiOperation({ summary: 'Get sightings for a specific missing person' })
+  @ApiResponse({ status: 200, description: 'List of sightings for the missing person.' })
   findByMissingPerson(@Param('id') id: string) {
     return this.sightingsService.findByMissingPerson(id);
   }
