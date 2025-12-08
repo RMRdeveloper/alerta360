@@ -11,6 +11,8 @@ import { MissingPersonsModule } from './missing-persons/missing-persons.module';
 import { SightingsModule } from './sightings/sightings.module';
 import { ChildrenModule } from './children/children.module';
 
+import { StatisticsModule } from './statistics/statistics.module';
+
 @Module({
   imports: [
     MongooseModule.forRoot('mongodb://localhost/360alert'),
@@ -20,12 +22,13 @@ import { ChildrenModule } from './children/children.module';
     }),
     ThrottlerModule.forRoot([{
       ttl: 60000,
-      limit: 10,
+      limit: 1000,
     }]),
     StorageModule,
     MissingPersonsModule,
     SightingsModule,
     ChildrenModule,
+    StatisticsModule,
   ],
   controllers: [AppController],
   providers: [

@@ -5,12 +5,14 @@ import { CreateMissingPersonDto } from './dto/create-missing-person.dto';
 import { IStorageService } from '../storage/storage.interface';
 import { Express } from 'express';
 
+
 @Controller('missing-persons')
 export class MissingPersonsController {
   constructor(
     private readonly missingPersonsService: MissingPersonsService,
     @Inject(IStorageService) private readonly storageService: IStorageService,
   ) { }
+
 
   @Post()
   @UseInterceptors(FilesInterceptor('photos'))
@@ -37,10 +39,12 @@ export class MissingPersonsController {
     return this.missingPersonsService.findOne(id);
   }
 
+
   @Put(':id')
   update(@Param('id') id: string, @Body() updateMissingPersonDto: any) {
     return this.missingPersonsService.update(id, updateMissingPersonDto);
   }
+
 
   @Delete(':id')
   remove(@Param('id') id: string) {

@@ -12,12 +12,12 @@ export class CreateSightingDto {
   @IsDate()
   date: Date;
 
-  @IsOptional()
   @IsString()
+  @IsOptional()
   description?: string;
 
-  @IsOptional()
   @IsString()
+  @IsOptional()
   photo?: string;
 
   @IsString()

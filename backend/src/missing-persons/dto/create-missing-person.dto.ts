@@ -1,8 +1,9 @@
-import { IsString, IsNumber, IsOptional, IsDate, IsArray } from 'class-validator';
+import { IsString, IsNumber, IsOptional, IsDate, IsArray, IsNotEmpty } from 'class-validator';
 import { Type, Transform } from 'class-transformer';
 
 export class CreateMissingPersonDto {
   @IsString()
+  @IsNotEmpty()
   name: string;
 
   @Type(() => Number)
@@ -10,26 +11,29 @@ export class CreateMissingPersonDto {
   age: number;
 
   @IsString()
+  @IsNotEmpty()
   gender: string;
 
   @IsString()
+  @IsNotEmpty()
   lastSeenLocation: string;
 
   @Type(() => Date)
   @IsDate()
   lastSeenDate: Date;
 
-  @IsOptional()
   @IsString()
+  @IsOptional()
   description?: string;
 
-  @IsOptional()
   @IsArray()
   @IsString({ each: true })
+  @IsOptional()
   photos?: string[];
 
   @IsString()
-  reporterId: string;
+  @IsOptional()
+  reporterId?: string;
 
   @IsOptional()
   @Transform(({ value }) => {
