@@ -29,8 +29,8 @@ export class MissingPerson {
   @Prop({ default: 'missing' }) // missing, found, deceased
   status: string;
 
-  @Prop({ required: true })
-  reporterId: string; // Could be a User ID or contact info for now
+  @Prop({ required: false })
+  reporterId?: string; // Optional now that auth is removed
 
   @Prop({
     type: { type: String, enum: ['Point'], default: 'Point' },
