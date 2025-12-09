@@ -203,6 +203,11 @@ const messages = {
       registerButton: 'Create Account',
       haveAccount: 'Already have an account?',
       loginLink: 'Sign In',
+    },
+    notFound: {
+      title: 'Page Not Found',
+      message: "The page you are looking for doesn't exist or has been moved.",
+      button: 'Go Home',
     }
   },
   es: {
@@ -408,6 +413,11 @@ const messages = {
       registerButton: 'Crear Cuenta',
       haveAccount: '¿Ya tienes una cuenta?',
       loginLink: 'Iniciar Sesión',
+    },
+    notFound: {
+      title: 'Página No Encontrada',
+      message: 'La página que buscas no existe o ha sido movida.',
+      button: 'Ir al Inicio',
     }
   }
 };

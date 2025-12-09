@@ -8,6 +8,7 @@ import ReportSightingView from '../views/ReportSightingView.vue';
 import RiskMapView from '../views/RiskMapView.vue';
 import LoginView from '../views/LoginView.vue';
 import RegisterView from '../views/RegisterView.vue';
+import NotFoundView from '../views/NotFoundView.vue';
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -61,7 +62,8 @@ const router = createRouter({
     },
     {
       path: '/:pathMatch(.*)*',
-      redirect: '/'
+      name: 'not-found',
+      component: NotFoundView
     }
   ],
 });
