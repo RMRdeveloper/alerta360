@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { ref, onMounted } from 'vue';
 import { useI18n } from 'vue-i18n';
+import { useGeolocation } from '../composables/useGeolocation';
 
 const { t } = useI18n();
 
@@ -10,8 +11,9 @@ const mapContainer = ref<HTMLElement | null>(null);
 const map = ref<google.maps.Map | null>(null);
 const marker = ref<google.maps.Marker | null>(null);
 const address = ref('');
-const loading = ref(false);
 const error = ref('');
+
+const { getCurrentPosition, loading } = useGeolocation();
 
 // Placeholder for API Key - User needs to replace this
 const GOOGLE_MAPS_API_KEY = import.meta.env.VITE_GOOGLE_MAPS_API_KEY || '';
@@ -55,22 +57,18 @@ const initMap = () => {
     ]
   });
 
-  // Try to auto-center on user location
-  if (navigator.geolocation) {
-    navigator.geolocation.getCurrentPosition(
-      (position) => {
-        const pos = {
-          lat: position.coords.latitude,
-          lng: position.coords.longitude,
-        };
-        map.value?.setCenter(pos);
-      },
-      () => {
-        // Silently fail and keep default location if denied/error
-        console.log(t('errors.geoDenied'));
-      }
-    );
-  }
+  getCurrentPosition()
+    .then((position) => {
+      const pos = {
+        lat: position.coords.latitude,
+        lng: position.coords.longitude,
+      };
+      map.value?.setCenter(pos);
+    })
+    .catch(() => {
+      // Silently fail and keep default location if denied/error
+      console.log(t('errors.geoDenied'));
+    });
 
   map.value.addListener('click', (e: google.maps.MapMouseEvent) => {
     if (e.latLng) {
@@ -113,32 +111,28 @@ const geocodePosition = (pos: google.maps.LatLng) => {
 };
 
 const getCurrentLocation = () => {
-  if (navigator.geolocation) {
-    loading.value = true;
-    navigator.geolocation.getCurrentPosition(
-      (position) => {
-        const pos = {
-          lat: position.coords.latitude,
-          lng: position.coords.longitude,
-        };
-        
-        if (map.value) {
-          map.value.setCenter(pos);
-          map.value.setZoom(15);
-          const latLng = new google.maps.LatLng(pos.lat, pos.lng);
-          placeMarker(latLng);
-          geocodePosition(latLng);
-        }
-        loading.value = false;
-      },
-      () => {
-        error.value = t('errors.geoFailed');
-        loading.value = false;
+  getCurrentPosition()
+    .then((position) => {
+      const pos = {
+        lat: position.coords.latitude,
+        lng: position.coords.longitude,
+      };
+
+      if (map.value) {
+        map.value.setCenter(pos);
+        map.value.setZoom(15);
+        const latLng = new google.maps.LatLng(pos.lat, pos.lng);
+        placeMarker(latLng);
+        geocodePosition(latLng);
       }
-    );
-  } else {
-    error.value = t('errors.geoUnsupported');
-  }
+    })
+    .catch((err) => {
+      if (err.message === 'Geolocation is not supported') {
+        error.value = t('errors.geoUnsupported');
+      } else {
+        error.value = t('errors.geoFailed');
+      }
+    });
 };
 
 onMounted(() => {
