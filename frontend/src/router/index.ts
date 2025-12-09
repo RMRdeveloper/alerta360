@@ -6,6 +6,8 @@ import RegisterMissingView from '../views/RegisterMissingView.vue';
 import RegisterChildView from '../views/RegisterChildView.vue';
 import ReportSightingView from '../views/ReportSightingView.vue';
 import RiskMapView from '../views/RiskMapView.vue';
+import LoginView from '../views/LoginView.vue';
+import RegisterView from '../views/RegisterView.vue';
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -44,6 +46,18 @@ const router = createRouter({
       path: '/risk-map',
       name: 'risk-map',
       component: RiskMapView,
+    },
+    {
+      path: '/login',
+      name: 'login',
+      component: LoginView,
+      meta: { layout: 'auth' }
+    },
+    {
+      path: '/register',
+      name: 'register',
+      component: RegisterView,
+      meta: { layout: 'auth' }
     },
     {
       path: '/:pathMatch(.*)*',
