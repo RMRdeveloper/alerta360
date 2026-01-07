@@ -1,3 +1,12 @@
+export interface User {
+  _id: string;
+  email: string;
+  firstName?: string;
+  lastName?: string;
+  avatar?: string;
+  googleId?: string;
+}
+
 export interface MissingPerson {
   _id: string;
   name: string;

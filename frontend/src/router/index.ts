@@ -1,4 +1,5 @@
 import { createRouter, createWebHistory } from 'vue-router';
+import { useAuthStore } from '../stores/auth';
 import HomeView from '../views/HomeView.vue';
 import MissingPersonsView from '../views/MissingPersonsView.vue';
 import MissingPersonDetailView from '../views/MissingPersonDetailView.vue';
@@ -52,13 +53,13 @@ const router = createRouter({
       path: '/login',
       name: 'login',
       component: LoginView,
-      meta: { layout: 'auth' }
+      meta: { layout: 'auth', guestOnly: true }
     },
     {
       path: '/register',
       name: 'register',
       component: RegisterView,
-      meta: { layout: 'auth' }
+      meta: { layout: 'auth', guestOnly: true }
     },
     {
       path: '/:pathMatch(.*)*',
@@ -66,6 +67,17 @@ const router = createRouter({
       component: NotFoundView
     }
   ],
+});
+
+router.beforeEach((to, from, next) => {
+  const authStore = useAuthStore();
+  
+  // Check for guest-only routes (login, register)
+  if (to.meta.guestOnly && authStore.isAuthenticated) {
+    next({ name: 'home' }); // Redirect authenticated users to home
+  } else {
+    next();
+  }
 });
 
 export default router;

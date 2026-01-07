@@ -1,15 +1,48 @@
 <script setup lang="ts">
 import { ref } from 'vue';
+import { useRouter } from 'vue-router';
+import { useAuthStore } from '../stores/auth';
 
-const fullName = ref('');
+// State
+const firstName = ref('');
+const lastName = ref('');
 const email = ref('');
 const password = ref('');
 const confirmPassword = ref('');
 const showPassword = ref(false);
+const errorMessage = ref('');
 
-const handleRegister = () => {
-  // UI only
-  console.log('Register attempt:', { fullName: fullName.value, email: email.value });
+// Dependencies
+const authStore = useAuthStore();
+const router = useRouter();
+
+// Constants
+const BACKEND_URL = import.meta.env.VITE_API_URL || 'http://localhost:3000';
+
+// Handlers
+const handleRegister = async () => {
+  if (password.value !== confirmPassword.value) {
+    errorMessage.value = 'Passwords do not match';
+    return;
+  }
+
+  try {
+    errorMessage.value = '';
+    await authStore.register({
+      email: email.value,
+      password: password.value,
+      firstName: firstName.value,
+      lastName: lastName.value
+    });
+    
+    router.push('/');
+  } catch (error) {
+    errorMessage.value = 'Registration failed. Email might be already in use.';
+  }
+};
+
+const handleGoogleLogin = () => {
+  window.location.href = `${BACKEND_URL}/auth/google`;
 };
 </script>
 
@@ -24,7 +57,7 @@ const handleRegister = () => {
     <!-- Register Card -->
     <div class="relative z-10 w-full max-w-md px-6">
       <div class="bg-white/80 backdrop-blur-xl border border-white/50 shadow-2xl rounded-3xl p-8 md:p-10">
-        
+
         <!-- Header -->
         <div class="text-center mb-8">
           <router-link to="/" class="inline-flex justify-center mb-4">
@@ -44,24 +77,41 @@ const handleRegister = () => {
 
         <!-- Form -->
         <form @submit.prevent="handleRegister" class="space-y-5">
-          
-          <!-- Full Name -->
-          <div class="space-y-1">
-            <label for="fullName" class="block text-sm font-semibold text-secondary ml-1">{{ $t('auth.fullName') }}</label>
-            <div class="relative group">
-              <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-gray-400 group-focus-within:text-primary transition-colors" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
-                </svg>
+
+          <!-- Error Feedback -->
+          <div v-if="errorMessage" class="p-3 bg-red-50 border border-red-100 text-red-600 text-sm rounded-xl text-center">
+            {{ errorMessage }}
+          </div>
+
+          <div class="grid grid-cols-2 gap-4">
+            <!-- First Name -->
+            <div class="space-y-1">
+              <label for="firstName" class="block text-sm font-semibold text-secondary ml-1">{{ $t('auth.firstName') }}</label>
+              <div class="relative group">
+                <input
+                  id="firstName"
+                  v-model="firstName"
+                  type="text"
+                  required
+                  class="block w-full px-4 py-3.5 bg-gray-50 border border-gray-200 rounded-xl text-secondary placeholder-gray-400 focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all duration-300 hover:bg-white"
+                  :placeholder="$t('auth.firstNamePlaceholder')"
+                >
               </div>
-              <input 
-                id="fullName" 
-                v-model="fullName" 
-                type="text" 
-                required
-                class="block w-full pl-11 pr-4 py-3.5 bg-gray-50 border border-gray-200 rounded-xl text-secondary placeholder-gray-400 focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all duration-300 hover:bg-white"
-                :placeholder="$t('auth.fullNamePlaceholder')"
-              >
+            </div>
+
+            <!-- Last Name -->
+            <div class="space-y-1">
+              <label for="lastName" class="block text-sm font-semibold text-secondary ml-1">{{ $t('auth.lastName') }}</label>
+              <div class="relative group">
+                <input
+                  id="lastName"
+                  v-model="lastName"
+                  type="text"
+                  required
+                  class="block w-full px-4 py-3.5 bg-gray-50 border border-gray-200 rounded-xl text-secondary placeholder-gray-400 focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all duration-300 hover:bg-white"
+                  :placeholder="$t('auth.lastNamePlaceholder')"
+                >
+              </div>
             </div>
           </div>
 
@@ -74,11 +124,11 @@ const handleRegister = () => {
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 12a4 4 0 10-8 0 4 4 0 008 0zm0 0v1.5a2.5 2.5 0 005 0V12a9 9 0 10-9 9m4.5-1.206a8.959 8.959 0 01-4.5 1.207" />
                 </svg>
               </div>
-              <input 
-                id="email" 
-                v-model="email" 
-                type="email" 
-                autocomplete="email" 
+              <input
+                id="email"
+                v-model="email"
+                type="email"
+                autocomplete="email"
                 required
                 class="block w-full pl-11 pr-4 py-3.5 bg-gray-50 border border-gray-200 rounded-xl text-secondary placeholder-gray-400 focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all duration-300 hover:bg-white"
                 :placeholder="$t('auth.emailPlaceholder')"
@@ -95,16 +145,16 @@ const handleRegister = () => {
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
                 </svg>
               </div>
-              <input 
-                id="password" 
-                v-model="password" 
-                :type="showPassword ? 'text' : 'password'" 
+              <input
+                id="password"
+                v-model="password"
+                :type="showPassword ? 'text' : 'password'"
                 required
                 class="block w-full pl-11 pr-11 py-3.5 bg-gray-50 border border-gray-200 rounded-xl text-secondary placeholder-gray-400 focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all duration-300 hover:bg-white"
                 :placeholder="$t('auth.passwordPlaceholder')"
               >
-              <button 
-                type="button" 
+              <button
+                type="button"
                 @click="showPassword = !showPassword"
                 class="absolute inset-y-0 right-0 pr-4 flex items-center text-gray-400 hover:text-secondary transition-colors focus:outline-none"
               >
@@ -128,10 +178,10 @@ const handleRegister = () => {
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
                 </svg>
               </div>
-              <input 
-                id="confirmPassword" 
-                v-model="confirmPassword" 
-                :type="showPassword ? 'text' : 'password'" 
+              <input
+                id="confirmPassword"
+                v-model="confirmPassword"
+                :type="showPassword ? 'text' : 'password'"
                 required
                 class="block w-full pl-11 pr-4 py-3.5 bg-gray-50 border border-gray-200 rounded-xl text-secondary placeholder-gray-400 focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all duration-300 hover:bg-white"
                 :placeholder="$t('auth.confirmPasswordPlaceholder')"
@@ -140,8 +190,8 @@ const handleRegister = () => {
           </div>
 
           <!-- Submit Button -->
-          <button 
-            type="submit" 
+          <button
+            type="submit"
             class="w-full relative overflow-hidden group bg-primary-gradient text-white font-bold py-4 rounded-xl shadow-lg shadow-primary/30 transition-all duration-300 hover:shadow-primary/50 hover:scale-[1.02] active:scale-[0.98]"
           >
             <span class="relative z-10 flex items-center justify-center gap-2">
@@ -160,13 +210,14 @@ const handleRegister = () => {
           </div>
 
           <!-- Google Button -->
-          <button 
+          <button
             type="button"
+            @click="handleGoogleLogin"
             class="w-full relative overflow-hidden group bg-white border border-gray-200 text-secondary font-semibold py-3.5 rounded-xl shadow-sm transition-all duration-300 hover:bg-gray-50 hover:border-gray-300 active:scale-[0.98]"
           >
             <span class="flex items-center justify-center gap-3">
               <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <path d="M21.8055 10.0415C21.829 10.6585 21.8055 11.2325 21.7115 11.7515C21.3655 13.7845 20.4285 15.6885 18.9865 17.1685C17.5145 18.6785 15.4325 19.6105 12.9805 19.6105C9.0765 19.6105 5.6765 17.1525 4.3055 13.6825C3.9665 12.8225 3.7785 11.8965 3.7785 10.9205C3.7785 9.9445 3.9665 9.0185 4.3055 8.1585C5.6765 4.6885 9.0765 2.2305 12.9805 2.2305C15.2285 2.2305 17.2025 3.0035 18.7845 4.3055L15.9085 7.1815C15.1565 6.4765 14.1225 6.0535 12.9805 6.0535C10.2285 6.0535 7.8465 7.8685 6.9425 10.4285C6.7305 11.0865 6.7305 11.8025 6.9425 12.4605C7.8465 15.0205 10.2285 16.8355 12.9805 16.8355C14.1785 16.8355 15.2605 16.5175 16.1425 15.9765C17.2005 15.3185 17.8465 14.2365 18.0465 13.0495H12.9805V10.0415H21.8055Z" fill="#FFC107"/>
+                <path d="M21.8055 10.0415C21.829 10.6585 21.8055 11.2325 21.7115 11.7515C21.3655 13.7845 20.4285 15.6885 18.9865 17.1685C17.5145 18.6785 15.4325 19.6105 12.9805 19.6105C9.0765 19.6105 5.6765 17.1525 4.3055 13.6825C3.9665 12.8225 3.7785 11.8965 3.7785 10.9205C3.7785 9.9445 3.9665 9.0185 4.3055 8.1585C5.6765 4.6885 9.0765 2.2305 12.9805 2.2305C15.2285 2.2305 17.2025 3.0035 18.7845 4.3055L15.9085 7.1815C15.1565 6.4765 14.1225 6.0535 12.9805 6.0535C10.2285 6.0535 7.8465 7.8685 6.9425 10.4285C6.7305 11.0865 6.7305 11.8025 6.9425 12.4605C7.8465 15.0205 10.2285 16.8355 12.9805 16.8355C14.1785 16.8355 15.2605 16.5175 16.1425 15.9765C17.2005 15.3185 17.8465 14.2365 18.0465 13.0495H12.9805V10.0415H21.8055Z" fill="#FFC107"/>     
                 <path d="M3.19238 10.5195L5.78338 12.4845C5.07438 14.2885 3.65138 15.7225 1.83838 16.4255L0.270381 15.2225C0.0383809 15.0335 -0.0636191 14.7335 0.0303809 14.4715C0.347381 13.5785 0.812381 12.7505 1.39638 12.0165C1.88438 11.3975 2.48838 10.8875 3.19238 10.5195Z" fill="#FF3D00"/>
                 <path d="M12.9802 19.6106C10.6082 19.6106 8.44419 18.7906 6.78619 17.4196L7.96519 14.7176C9.07019 15.9386 10.8752 16.8356 12.9802 16.8356C16.3262 16.8356 19.1432 14.5426 20.1232 11.4596L22.9562 12.4276C21.8612 16.3276 17.9232 19.6106 12.9802 19.6106Z" fill="#4CAF50"/>
                 <path d="M22.9566 9.42349L20.2546 10.3755C19.9576 8.35649 18.7306 6.57849 17.0266 5.41849L18.4716 2.85849C18.8476 3.17949 19.2006 3.52849 19.5266 3.90349C21.0546 5.51849 22.1816 7.42349 22.9566 9.42349Z" fill="#1976D2"/>
@@ -187,7 +238,7 @@ const handleRegister = () => {
           </div>
         </form>
       </div>
-      
+
       <!-- Bottom Links -->
       <div class="mt-8 text-center">
         <router-link to="/" class="text-sm font-medium text-gray-400 hover:text-secondary transition-colors inline-flex items-center gap-2">
