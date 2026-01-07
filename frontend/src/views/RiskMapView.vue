@@ -142,7 +142,7 @@ onMounted(() => {
 </script>
 
 <template>
-  <div class="fixed inset-0 pt-16 bg-gray-900">
+  <div class="fixed inset-0 pt-16 bg-gray-900 overflow-hidden">
     <div v-if="isLoading" class="absolute inset-0 flex items-center justify-center z-20 bg-gray-900 text-white">
       <div class="flex flex-col items-center gap-4">
         <div class="w-12 h-12 border-4 border-primary/30 border-t-primary rounded-full animate-spin"></div>
@@ -157,7 +157,7 @@ onMounted(() => {
     <div ref="mapContainer" class="w-full h-full"></div>
 
     <!-- Time Filter Chips -->
-    <div class="absolute top-20 left-1/2 -translate-x-1/2 z-10">
+    <div class="absolute top-28 left-1/2 -translate-x-1/2 z-10">
       <div class="flex gap-1 bg-black/50 backdrop-blur-xl p-1 rounded-full border border-white/10">
         <button
           v-for="filter in filters"
@@ -231,50 +231,55 @@ onMounted(() => {
     </div>
 
     <!-- Cases Drawer -->
-    <div 
-      class="absolute top-16 right-0 bottom-0 w-80 z-20 transition-transform duration-300 ease-out"
-      :class="isDrawerOpen ? 'translate-x-0' : 'translate-x-full'"
-    >
-      <div class="h-full bg-black/80 backdrop-blur-xl border-l border-white/10 flex flex-col">
-        <div class="p-4 border-b border-white/10 flex justify-between items-center">
-          <h3 class="text-white font-bold">Casos activos</h3>
-          <button @click="isDrawerOpen = false" class="text-gray-400 hover:text-white">
-            <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
-            </svg>
-          </button>
-        </div>
-        
-        <div class="flex-1 overflow-y-auto p-4 space-y-3">
-          <button
-            v-for="person in getFilteredCases()"
-            :key="person._id"
-            @click="panToCase(person); isDrawerOpen = false"
-            class="w-full flex items-center gap-3 p-3 rounded-xl bg-white/5 hover:bg-white/10 border border-white/5 transition-all text-left"
-          >
-            <img 
-              v-if="person.photos?.[0]"
-              :src="getPhotoUrl(person)" 
-              class="w-12 h-12 rounded-lg object-cover flex-shrink-0"
-            />
-            <div v-else class="w-12 h-12 rounded-lg bg-gray-700 flex items-center justify-center flex-shrink-0">
-              <svg class="h-6 w-6 text-gray-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+    <Teleport to="body">
+      <div 
+        class="fixed top-0 right-0 bottom-0 w-80 z-[60] transition-transform duration-300 ease-out overflow-hidden shadow-2xl"
+        :class="[
+          isDrawerOpen ? 'translate-x-0' : 'translate-x-full',
+          isDrawerOpen ? 'pointer-events-auto' : 'pointer-events-none'
+        ]"
+      >
+        <div class="h-full bg-gray-900/95 backdrop-blur-xl border-l border-white/10 flex flex-col">
+          <div class="p-4 border-b border-white/10 flex justify-between items-center">
+            <h3 class="text-white font-bold">Casos activos</h3>
+            <button @click="isDrawerOpen = false" class="text-gray-400 hover:text-white">
+              <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
               </svg>
-            </div>
-            <div class="flex-1 min-w-0">
-              <p class="text-white font-semibold text-sm truncate">{{ person.name }}</p>
-              <p class="text-gray-400 text-xs">{{ person.age }} años</p>
-              <p class="text-gray-500 text-xs truncate">{{ person.lastSeenLocation }}</p>
-            </div>
-          </button>
+            </button>
+          </div>
           
-          <div v-if="getFilteredCases().length === 0" class="text-center py-8 text-gray-500">
-            No hay casos para el filtro seleccionado
+          <div class="flex-1 overflow-y-auto p-4 space-y-3">
+            <button
+              v-for="person in getFilteredCases()"
+              :key="person._id"
+              @click="panToCase(person); isDrawerOpen = false"
+              class="w-full flex items-center gap-3 p-3 rounded-xl bg-white/5 hover:bg-white/10 border border-white/5 transition-all text-left"
+            >
+              <img 
+                v-if="person.photos?.[0]"
+                :src="getPhotoUrl(person)" 
+                class="w-12 h-12 rounded-lg object-cover flex-shrink-0"
+              />
+              <div v-else class="w-12 h-12 rounded-lg bg-gray-700 flex items-center justify-center flex-shrink-0">
+                <svg class="h-6 w-6 text-gray-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                </svg>
+              </div>
+              <div class="flex-1 min-w-0">
+                <p class="text-white font-semibold text-sm truncate">{{ person.name }}</p>
+                <p class="text-gray-400 text-xs">{{ person.age }} años</p>
+                <p class="text-gray-500 text-xs truncate">{{ person.lastSeenLocation }}</p>
+              </div>
+            </button>
+            
+            <div v-if="getFilteredCases().length === 0" class="text-center py-8 text-gray-500">
+              No hay casos para el filtro seleccionado
+            </div>
           </div>
         </div>
       </div>
-    </div>
+    </Teleport>
     <!-- Report Modal -->
     <div 
       v-if="mapClickCoords" 
