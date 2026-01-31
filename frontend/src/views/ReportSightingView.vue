@@ -3,7 +3,8 @@ import { ref, onMounted } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 import { useI18n } from 'vue-i18n';
 import api from '../services/api';
-import { apiRoutes } from '../constants/api.constants';
+import { apiRoutes, paginationConstants } from '../constants/api.constants';
+import { missingStatus } from '../constants/filter.constants';
 import { routePaths } from '../constants/routes.constants';
 import type { MissingPerson } from '../types';
 import LocationPicker from '../components/LocationPicker.vue';
@@ -31,8 +32,10 @@ const loading = ref(false);
 
 onMounted(async () => {
   try {
-    const response = await api.get(apiRoutes.missingPersons);
-    people.value = response.data;
+    const response = await api.get(apiRoutes.missingPersons, {
+      params: { factor: paginationConstants.mapPageSize, status: missingStatus },
+    });
+    people.value = response.data.items ?? [];
     
     // Auto-select if passed in query
     if (route.query.personId) {

@@ -17,7 +17,9 @@ async function bootstrap() {
     credentials: true,
   });
   app.use(cookieParser());
-  app.useGlobalPipes(new ValidationPipe({ transform: true, stopAtFirstError: true }));
+  app.useGlobalPipes(
+    new ValidationPipe({ transform: true, stopAtFirstError: true }),
+  );
 
   const config = new DocumentBuilder()
     .setTitle('Alerta360 API')

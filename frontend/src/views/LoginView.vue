@@ -1,36 +1,32 @@
 <script setup lang="ts">
 import { ref } from 'vue';
 import { useRouter } from 'vue-router';
+import { useI18n } from 'vue-i18n';
 import { useAuthStore } from '../stores/auth';
+import { apiBaseUrl } from '../services/api';
+import { apiRoutes } from '../constants/api.constants';
 
-// State
+const { t } = useI18n();
 const email = ref('');
 const password = ref('');
 const showPassword = ref(false);
 const errorMessage = ref('');
 
-// Dependencies
 const authStore = useAuthStore();
 const router = useRouter();
 
-// Constants (DRY/KISS)
-const BACKEND_URL = import.meta.env.VITE_API_URL || 'http://localhost:3000';
-
-// Handlers
 const handleLogin = async () => {
   try {
     errorMessage.value = '';
     await authStore.login({ email: email.value, password: password.value });
-    const returnUrl = (router.currentRoute.value.query.returnUrl as string) || '/';
-    router.push(returnUrl);
-  } catch (error) {
-    errorMessage.value = 'Invalid credentials. Please try again.';
+    router.push('/');
+  } catch {
+    errorMessage.value = t('auth.loginError');
   }
 };
 
 const handleGoogleLogin = () => {
-  // Delegate OAuth flow to backend
-  window.location.href = `${BACKEND_URL}/auth/google`;
+  window.location.href = `${apiBaseUrl}${apiRoutes.authGoogle}`;
 };
 </script>
 

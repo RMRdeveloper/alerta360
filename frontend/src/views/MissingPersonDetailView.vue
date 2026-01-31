@@ -8,6 +8,7 @@ import { routeNames } from '../constants/routes.constants';
 import { useAuthStore } from '../stores/auth';
 import { usePhotoUrl } from '../composables/usePhotoUrl';
 import { useShareProfile } from '../composables/useShareProfile';
+import { formatDate } from '../utils';
 import type { MissingPerson, Sighting } from '../types';
 
 const authStore = useAuthStore();
@@ -21,20 +22,11 @@ const currentPhotoIndex = ref(0);
 const isFullscreen = ref(false);
 const selectedSightingPhoto = ref<string | null>(null);
 
-const formatDate = (dateString: string) => {
-  return new Date(dateString).toLocaleDateString(locale.value, {
-    weekday: 'long',
-    year: 'numeric',
-    month: 'long',
-    day: 'numeric',
-  });
-};
-
 const getShareMessage = () => {
   if (!person.value) return '';
   return t('share.message', {
     name: person.value.name,
-    date: formatDate(person.value.lastSeenDate),
+    date: formatDate(person.value.lastSeenDate, locale.value, 'long'),
   });
 };
 
@@ -303,7 +295,7 @@ const isAuthor = computed(
       <div class="lg:col-span-7 space-y-8">
         <div>
           <h1 class="text-5xl font-extrabold text-secondary mb-2">{{ person.name }}</h1>
-          <p class="text-xl text-light">{{ $t('detail.missingSince') }} {{ formatDate(person.lastSeenDate) }}</p>
+          <p class="text-xl text-light">{{ $t('detail.missingSince') }} {{ formatDate(person.lastSeenDate, locale, 'long') }}</p>
         </div>
 
         <div class="bg-surface rounded-3xl p-8 shadow-lg shadow-gray-100 border border-white space-y-6">
@@ -384,7 +376,7 @@ const isAuthor = computed(
               <div class="space-y-2">
                 <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
                   <span class="font-bold text-secondary text-lg">{{ sighting.location }}</span>
-                  <span class="text-sm font-medium text-light bg-gray-100 px-3 py-1 rounded-full">{{ formatDate(sighting.date) }}</span>
+                  <span class="text-sm font-medium text-light bg-gray-100 px-3 py-1 rounded-full">{{ formatDate(sighting.date, locale, 'long') }}</span>
                 </div>
                 
                 <p class="text-secondary">{{ sighting.description }}</p>

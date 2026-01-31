@@ -1,5 +1,11 @@
 <script setup lang="ts">
+import { computed } from 'vue';
+import { useRoute } from 'vue-router';
 import AppNavbar from '../components/AppNavbar.vue';
+import HelpButton from '../components/HelpButton.vue';
+
+const route = useRoute();
+const showHelpButton = computed(() => route.path !== '/glossary');
 </script>
 
 <template>
@@ -10,5 +16,6 @@ import AppNavbar from '../components/AppNavbar.vue';
         <slot />
       </div>
     </main>
+    <HelpButton v-if="showHelpButton" />
   </div>
 </template>

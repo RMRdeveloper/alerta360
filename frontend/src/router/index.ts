@@ -10,6 +10,7 @@ import RiskMapView from '../views/RiskMapView.vue';
 import LoginView from '../views/LoginView.vue';
 import RegisterView from '../views/RegisterView.vue';
 import ProfileView from '../views/ProfileView.vue';
+import GlossaryView from '../views/GlossaryView.vue';
 import NotFoundView from '../views/NotFoundView.vue';
 
 const router = createRouter({
@@ -74,6 +75,11 @@ const router = createRouter({
       name: 'profile',
       component: ProfileView,
       meta: { requiresAuth: true },
+    },
+    {
+      path: '/glossary',
+      name: 'glossary',
+      component: GlossaryView,
     },
     {
       path: '/:pathMatch(.*)*',

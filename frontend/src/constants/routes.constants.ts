@@ -10,6 +10,7 @@ export const routeNames = {
   login: 'login',
   register: 'register',
   profile: 'profile',
+  glossary: 'glossary',
   notFound: 'not-found',
 } as const;
 
@@ -19,4 +20,5 @@ export const routePaths = {
   editMissing: (id: string) => `/missing-persons/${id}/edit`,
   reportSighting: '/report-sighting',
   profile: '/profile',
+  glossary: '/glossary',
 } as const;

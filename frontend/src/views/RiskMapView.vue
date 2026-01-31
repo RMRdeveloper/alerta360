@@ -3,7 +3,8 @@ import { ref, computed, onMounted, watch } from 'vue';
 import { useRiskMap, type TimeFilter } from '../composables/useRiskMap';
 import { useGeolocation } from '../composables/useGeolocation';
 import api from '../services/api';
-import { apiRoutes } from '../constants/api.constants';
+import { apiRoutes, paginationConstants } from '../constants/api.constants';
+import { missingStatus } from '../constants/filter.constants';
 import type { MissingPerson } from '../types';
 import MissingPersonSelector from '../components/MissingPersonSelector.vue';
 import { usePhotoUrl } from '../composables/usePhotoUrl';
@@ -60,8 +61,13 @@ const handleLocateMe = async () => {
 
 const loadMissingPersons = async () => {
   try {
-    const response = await api.get(apiRoutes.missingPersons);
-    missingPersons.value = response.data.filter((p: MissingPerson) => p.status === 'missing');
+    const response = await api.get(apiRoutes.missingPersons, {
+      params: { factor: paginationConstants.mapPageSize },
+    });
+    const items = response.data.items ?? [];
+    missingPersons.value = items.filter(
+      (person: MissingPerson) => person.status === missingStatus
+    );
   } catch {
     // Silent fail
   }

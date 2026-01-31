@@ -8,6 +8,7 @@ import {
 } from './schemas/missing-person.schema';
 import { StorageModule } from '../storage/storage.module';
 import { AuthModule } from '../auth/auth.module';
+import { ImageModerationModule } from '../image-moderation/image-moderation.module';
 
 @Module({
   imports: [
@@ -16,6 +17,7 @@ import { AuthModule } from '../auth/auth.module';
     ]),
     StorageModule,
     AuthModule,
+    ImageModerationModule,
   ],
   controllers: [MissingPersonsController],
   providers: [MissingPersonsService],

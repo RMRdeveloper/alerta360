@@ -13,6 +13,7 @@ Requisitos: Node 18+, MongoDB. Variables de entorno vía `.env` (no commitear; u
 
 - **Backend** (`backend/`): Módulos por dominio bajo `src/` (ej. `missing-persons/`, `children/`, `sightings/`, `auth/`). Por módulo: `*.controller.ts`, `*.service.ts`, `*.module.ts`, `dto/` (create-*.dto.ts), `schemas/` (Mongoose).
 - **Frontend** (`frontend/src/`): `views/` (páginas, sufijo `*View.vue`), `components/`, `composables/` (use*.ts), `services/`, `stores/`, `router/`, `types/`, `layouts/`.
+- **Funciones utilitarias**: Centralizar en `utils.ts` (o `utils.js` si el módulo o proyecto usa JavaScript). En backend: `src/utils.ts` o `src/utils/`; en frontend: `src/utils.ts` o `src/utils/`. Funciones puras, de formateo o helpers reutilizables que no encajan en un módulo de dominio ni como composable.
 
 ## 3. Convenciones Backend (NestJS)
 

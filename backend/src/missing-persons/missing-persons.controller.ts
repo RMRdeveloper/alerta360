@@ -25,7 +25,12 @@ import { MissingPersonsQueryDto } from './dto/missing-persons-query.dto';
 import { PaginatedMissingPersonsDto } from './dto/paginated-missing-persons.dto';
 import { IStorageService } from '../storage/storage.interface';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
-import { uploadConfig } from '../config/app.config';
+import {
+  uploadConfig,
+  moderationMessages,
+  imageModerationErrorCode,
+} from '../config/app.config';
+import { ImageModerationService } from '../image-moderation/image-moderation.service';
 
 import {
   ApiTags,
@@ -42,6 +47,7 @@ export class MissingPersonsController {
   constructor(
     private readonly missingPersonsService: MissingPersonsService,
     @Inject(IStorageService) private readonly storageService: IStorageService,
+    private readonly imageModerationService: ImageModerationService,
   ) {}
 
   @Post()
@@ -60,6 +66,10 @@ export class MissingPersonsController {
     status: 400,
     description: `Maximum ${uploadConfig.maxPhotosPerPost} photos allowed per post.`,
   })
+  @ApiResponse({
+    status: 400,
+    description: moderationMessages.multipleImagesRejected,
+  })
   @UseInterceptors(FilesInterceptor('photos'))
   async create(
     @Body() createMissingPersonDto: CreateMissingPersonDto,
@@ -73,6 +83,15 @@ export class MissingPersonsController {
     }
 
     if (files && files.length > 0) {
+      for (const file of files) {
+        const safe = await this.imageModerationService.isImageSafe(file);
+        if (!safe) {
+          throw new BadRequestException({
+            message: moderationMessages.multipleImagesRejected,
+            errorCode: imageModerationErrorCode,
+          });
+        }
+      }
       const photoUrls = await Promise.all(
         files.map((file) => this.storageService.uploadFile(file)),
       );
@@ -126,6 +145,10 @@ export class MissingPersonsController {
     description: `Maximum ${uploadConfig.maxPhotosPerPost} photos allowed per post.`,
   })
   @ApiResponse({
+    status: 400,
+    description: moderationMessages.multipleImagesRejected,
+  })
+  @ApiResponse({
     status: 403,
     description: 'Not the author of this publication.',
   })
@@ -157,6 +180,15 @@ export class MissingPersonsController {
     }
 
     if (files && files.length > 0) {
+      for (const file of files) {
+        const safe = await this.imageModerationService.isImageSafe(file);
+        if (!safe) {
+          throw new BadRequestException({
+            message: moderationMessages.multipleImagesRejected,
+            errorCode: imageModerationErrorCode,
+          });
+        }
+      }
       const newPhotoUrls = await Promise.all(
         files.map((file) => this.storageService.uploadFile(file)),
       );

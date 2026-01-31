@@ -1,3 +1,5 @@
+export const missingStatus = 'missing' as const;
+
 export const hairColors = [
   'black',
   'brown',

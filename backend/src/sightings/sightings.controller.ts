@@ -7,12 +7,18 @@ import {
   UseInterceptors,
   UploadedFile,
   Inject,
+  BadRequestException,
 } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { SightingsService } from './sightings.service';
 import { CreateSightingDto } from './dto/create-sighting.dto';
 import { SightingResponseDto } from './dto/sighting-response.dto';
 import { IStorageService } from '../storage/storage.interface';
+import {
+  moderationMessages,
+  imageModerationErrorCode,
+} from '../config/app.config';
+import { ImageModerationService } from '../image-moderation/image-moderation.service';
 import { Express } from 'express';
 
 import {
@@ -29,6 +35,7 @@ export class SightingsController {
   constructor(
     private readonly sightingsService: SightingsService,
     @Inject(IStorageService) private readonly storageService: IStorageService,
+    private readonly imageModerationService: ImageModerationService,
   ) {}
 
   @Post()
@@ -42,12 +49,23 @@ export class SightingsController {
     status: 201,
     description: 'The sighting has been successfully reported.',
   })
+  @ApiResponse({
+    status: 400,
+    description: moderationMessages.singleImageRejected,
+  })
   @UseInterceptors(FileInterceptor('photo'))
   async create(
     @Body() createSightingDto: CreateSightingDto,
     @UploadedFile() file?: Express.Multer.File,
   ) {
     if (file) {
+      const safe = await this.imageModerationService.isImageSafe(file);
+      if (!safe) {
+        throw new BadRequestException({
+          message: moderationMessages.singleImageRejected,
+          errorCode: imageModerationErrorCode,
+        });
+      }
       const photoUrl = await this.storageService.uploadFile(file);
       createSightingDto.photo = photoUrl;
     }

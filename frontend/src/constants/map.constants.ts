@@ -89,3 +89,25 @@ export const HEATMAP_GRADIENT = [
 export const DEFAULT_MAP_CENTER = { lat: 18.7357, lng: -70.1627 };
 
 export const DEFAULT_MAP_ZOOM = 8;
+
+export const millisecondsPerDay = 86400000;
+
+export const heatmapRadius = 30;
+
+export const heatmapOpacity = 0.8;
+
+export const highRiskThreshold = 0.05;
+
+export const minNearbyCasesForHighRiskZone = 2;
+
+export const markerCaseColor = '#FF0000';
+export const markerStrokeColor = '#FFFFFF';
+export const markerUserColor = '#3B82F6';
+export const markerCaseScale = 10;
+export const markerUserScale = 12;
+export const markerStrokeWeight = 2;
+export const markerUserStrokeWeight = 3;
+
+export const userLocationZoom = 14;
+export const caseDetailZoom = 15;
+export const userLocationRadius = 5000;

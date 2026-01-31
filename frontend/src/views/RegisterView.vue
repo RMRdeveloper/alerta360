@@ -1,9 +1,12 @@
 <script setup lang="ts">
 import { ref } from 'vue';
 import { useRouter } from 'vue-router';
+import { useI18n } from 'vue-i18n';
 import { useAuthStore } from '../stores/auth';
+import { apiBaseUrl } from '../services/api';
+import { apiRoutes } from '../constants/api.constants';
 
-// State
+const { t } = useI18n();
 const firstName = ref('');
 const lastName = ref('');
 const email = ref('');
@@ -12,17 +15,12 @@ const confirmPassword = ref('');
 const showPassword = ref(false);
 const errorMessage = ref('');
 
-// Dependencies
 const authStore = useAuthStore();
 const router = useRouter();
 
-// Constants
-const BACKEND_URL = import.meta.env.VITE_API_URL || 'http://localhost:3000';
-
-// Handlers
 const handleRegister = async () => {
   if (password.value !== confirmPassword.value) {
-    errorMessage.value = 'Passwords do not match';
+    errorMessage.value = t('auth.passwordsDoNotMatch');
     return;
   }
 
@@ -32,17 +30,16 @@ const handleRegister = async () => {
       email: email.value,
       password: password.value,
       firstName: firstName.value,
-      lastName: lastName.value
+      lastName: lastName.value,
     });
-    
     router.push('/');
-  } catch (error) {
-    errorMessage.value = 'Registration failed. Email might be already in use.';
+  } catch {
+    errorMessage.value = t('auth.registerError');
   }
 };
 
 const handleGoogleLogin = () => {
-  window.location.href = `${BACKEND_URL}/auth/google`;
+  window.location.href = `${apiBaseUrl}${apiRoutes.authGoogle}`;
 };
 </script>
 

@@ -7,10 +7,12 @@ import { AppService } from './app.service';
 import { ServeStaticModule } from '@nestjs/serve-static';
 import { join } from 'path';
 import { StorageModule } from './storage/storage.module';
+import { ImageModerationModule } from './image-moderation/image-moderation.module';
 import { MissingPersonsModule } from './missing-persons/missing-persons.module';
 import { SightingsModule } from './sightings/sightings.module';
 import { ChildrenModule } from './children/children.module';
 import { StatisticsModule } from './statistics/statistics.module';
+import { GlossaryModule } from './glossary/glossary.module';
 import { AuthModule } from './auth/auth.module';
 import { UsersModule } from './users/users.module';
 import { ConfigModule, ConfigService } from '@nestjs/config';
@@ -39,10 +41,12 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
       },
     ]),
     StorageModule,
+    ImageModerationModule,
     MissingPersonsModule,
     SightingsModule,
     ChildrenModule,
     StatisticsModule,
+    GlossaryModule,
     AuthModule,
     UsersModule,
   ],

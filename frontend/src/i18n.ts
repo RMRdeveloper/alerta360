@@ -144,6 +144,8 @@ const messages = {
       reward: 'Reward',
       rewardPlaceholder: 'Optional amount',
       rewardCurrency: 'Currency',
+      close: 'Close',
+      understood: 'Understood',
     },
     attributes: {
       hair: {
@@ -213,6 +215,13 @@ const messages = {
       low: 'Low',
       high: 'High',
       filterAll: 'All',
+      noPhoto: 'No photo',
+      viewCase: 'View case',
+      loadError: 'Error loading heat map.',
+      years: 'years',
+      shareMessage: '{name}, {age} {years}. Last seen at {location}. {contactPrompt}',
+      contactPrompt: 'If you have information, please contact.',
+      ageAndGender: '{age} years • {gender}',
     },
     sightings: {
       title: 'Reported Sightings',
@@ -231,6 +240,9 @@ const messages = {
       reportFailed: 'Failed to report sighting.',
       loadData: 'Failed to load data.',
       maxPhotos: 'Maximum {max} photos allowed per post',
+      imageRejectedTitle: 'Content not allowed',
+      imageRejectedReason:
+        'One or more images contain adult or inappropriate content and cannot be published. Please upload different photos.',
     },
     alerts: {
       reportSuccess: 'Sighting reported successfully!',
@@ -254,6 +266,7 @@ const messages = {
       passwordPlaceholder: 'Enter your password',
       forgotPassword: 'Forgot password?',
       loginButton: 'Sign In',
+      loginError: 'Invalid credentials. Please try again.',
       noAccount: "Don't have an account?",
       registerLink: 'Register now',
       backToHome: 'Back to Home',
@@ -264,6 +277,8 @@ const messages = {
       confirmPassword: 'Confirm Password',
       confirmPasswordPlaceholder: 'Confirm your password',
       registerButton: 'Create Account',
+      registerError: 'Registration failed. Email might be already in use.',
+      passwordsDoNotMatch: 'Passwords do not match',
       haveAccount: 'Already have an account?',
       loginLink: 'Sign In',
       orContinueWith: 'Or continue with',
@@ -288,7 +303,15 @@ const messages = {
       title: 'Page Not Found',
       message: "The page you are looking for doesn't exist or has been moved.",
       button: 'Go Home',
-    }
+    },
+    glossary: {
+      title: 'Dictionary',
+      subtitle: 'Understand the key terms used in our platform.',
+      searchPlaceholder: 'Search terms...',
+      noResults: 'No terms found matching your search.',
+      loading: 'Loading...',
+      retry: 'Retry',
+    },
   },
   es: {
     nav: {
@@ -434,6 +457,8 @@ const messages = {
       reward: 'Recompensa',
       rewardPlaceholder: 'Monto opcional',
       rewardCurrency: 'Moneda',
+      close: 'Cerrar',
+      understood: 'Entendido',
     },
     attributes: {
       hair: {
@@ -503,6 +528,13 @@ const messages = {
       low: 'Bajo',
       high: 'Alto',
       filterAll: 'Todo',
+      noPhoto: 'Sin foto',
+      viewCase: 'Ver caso',
+      loadError: 'Error cargando el mapa de calor.',
+      years: 'años',
+      shareMessage: '{name}, {age} {years}. Última vez visto en {location}. {contactPrompt}',
+      contactPrompt: 'Si tienes información, por favor contacta.',
+      ageAndGender: '{age} años • {gender}',
     },
     sightings: {
       title: 'Avistamientos Reportados',
@@ -521,6 +553,9 @@ const messages = {
       reportFailed: 'Error al reportar avistamiento.',
       loadData: 'Error al cargar los datos.',
       maxPhotos: 'Máximo {max} fotos permitidas por publicación',
+      imageRejectedTitle: 'Contenido no permitido',
+      imageRejectedReason:
+        'Una o más imágenes contienen contenido adulto o inapropiado y no pueden publicarse. Por favor sube otras fotos.',
     },
     alerts: {
       reportSuccess: '¡Avistamiento reportado exitosamente!',
@@ -544,6 +579,7 @@ const messages = {
       passwordPlaceholder: 'Ingresa tu contraseña',
       forgotPassword: '¿Olvidaste tu contraseña?',
       loginButton: 'Iniciar Sesión',
+      loginError: 'Credenciales inválidas. Por favor intenta de nuevo.',
       noAccount: '¿No tienes una cuenta?',
       registerLink: 'Regístrate ahora',
       backToHome: 'Volver al Inicio',
@@ -554,6 +590,8 @@ const messages = {
       confirmPassword: 'Confirmar Contraseña',
       confirmPasswordPlaceholder: 'Confirma tu contraseña',
       registerButton: 'Crear Cuenta',
+      registerError: 'Registro fallido. El correo podría estar en uso.',
+      passwordsDoNotMatch: 'Las contraseñas no coinciden',
       haveAccount: '¿Ya tienes una cuenta?',
       loginLink: 'Iniciar Sesión',
       orContinueWith: 'O continúa con',
@@ -578,7 +616,15 @@ const messages = {
       title: 'Página No Encontrada',
       message: 'La página que buscas no existe o ha sido movida.',
       button: 'Ir al Inicio',
-    }
+    },
+    glossary: {
+      title: 'Diccionario',
+      subtitle: 'Comprende las palabras clave utilizadas en nuestra plataforma.',
+      searchPlaceholder: 'Buscar términos...',
+      noResults: 'No se encontraron términos que coincidan con tu búsqueda.',
+      loading: 'Cargando...',
+      retry: 'Reintentar',
+    },
   }
 };
 

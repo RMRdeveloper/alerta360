@@ -57,3 +57,19 @@ export interface PaginatedMissingPersons {
   factor: number;
   totalPages: number;
 }
+
+export interface GlossaryTerm {
+  key: string;
+  term: string;
+  definition: string;
+}
+
+export interface GlossaryCategory {
+  id: string;
+  label: string;
+  terms: GlossaryTerm[];
+}
+
+export interface GlossaryResponse {
+  categories: GlossaryCategory[];
+}
