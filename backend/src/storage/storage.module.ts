@@ -11,4 +11,4 @@ import { IStorageService } from './storage.interface';
   ],
   exports: [IStorageService],
 })
-export class StorageModule { }
+export class StorageModule {}

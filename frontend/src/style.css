@@ -61,11 +61,21 @@ body {
   border-color: var(--color-border);
 }
 
-/* Modern Form Elements */
-input,
+.border-primary {
+  border-color: var(--color-primary);
+}
+
+/* Modern Form Elements - explicit text color overrides PrimeVue/dark theme */
+input:not([type="hidden"]),
 select,
 textarea {
+  color: var(--color-text) !important;
   transition: all 0.3s ease;
+}
+
+input::placeholder,
+textarea::placeholder {
+  color: var(--color-text-light);
 }
 
 input:focus,

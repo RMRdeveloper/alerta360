@@ -34,6 +34,10 @@ export interface MissingPerson {
     type: string;
     coordinates: number[];
   };
+  reward?: {
+    amount: number;
+    currency?: string;
+  };
 }
 
 export interface Sighting {
@@ -42,6 +46,14 @@ export interface Sighting {
   location: string;
   date: string;
   description: string;
-  photo: string;
+  photo?: string;
   reporterContact: string;
+}
+
+export interface PaginatedMissingPersons {
+  items: MissingPerson[];
+  total: number;
+  page: number;
+  factor: number;
+  totalPages: number;
 }

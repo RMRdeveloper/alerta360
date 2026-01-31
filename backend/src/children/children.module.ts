@@ -5,8 +5,10 @@ import { ChildrenService } from './children.service';
 import { Child, ChildSchema } from './schemas/child.schema';
 
 @Module({
-  imports: [MongooseModule.forFeature([{ name: Child.name, schema: ChildSchema }])],
+  imports: [
+    MongooseModule.forFeature([{ name: Child.name, schema: ChildSchema }]),
+  ],
   controllers: [ChildrenController],
   providers: [ChildrenService],
 })
-export class ChildrenModule { }
+export class ChildrenModule {}

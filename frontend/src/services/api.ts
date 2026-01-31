@@ -1,13 +1,11 @@
 import axios from 'axios';
 
+export const apiBaseUrl =
+  import.meta.env.VITE_API_URL || 'http://localhost:3000';
 
 const api = axios.create({
-  baseURL: import.meta.env.VITE_API_URL || 'http://localhost:3000',
-  withCredentials: true, // Important for cookies
+  baseURL: apiBaseUrl,
+  withCredentials: true,
 });
-
-
-
-
 
 export default api;

@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { ref, computed } from 'vue';
+import { usePhotoUrl } from '../composables/usePhotoUrl';
 import type { MissingPerson } from '../types';
 
 const props = defineProps<{
@@ -11,17 +12,19 @@ const emit = defineEmits<{
   (e: 'update:modelValue', value: string): void;
 }>();
 
+const { getPhotoUrl: getPhotoUrlFromPath } = usePhotoUrl();
+
 const isOpen = ref(false);
 const searchQuery = ref('');
 
-const selectedPerson = computed(() => 
+const selectedPerson = computed(() =>
   props.people.find(p => p._id === props.modelValue)
 );
 
 const filteredPeople = computed(() => {
   if (!searchQuery.value) return props.people;
   const query = searchQuery.value.toLowerCase();
-  return props.people.filter(p => 
+  return props.people.filter(p =>
     p.name.toLowerCase().includes(query)
   );
 });
@@ -32,12 +35,8 @@ const selectPerson = (person: MissingPerson) => {
 };
 
 const getPhotoUrl = (person: MissingPerson) => {
-  if (person.photos && person.photos.length > 0) {
-    const photoPath = person.photos[0];
-    if (photoPath.startsWith('http')) return photoPath;
-    return `http://localhost:3000${photoPath}`;
-  }
-  return 'https://placehold.co/400x400/2d3436/ffffff?text=No+Image';
+  const photoPath = person.photos?.[0];
+  return getPhotoUrlFromPath(photoPath);
 };
 </script>
 

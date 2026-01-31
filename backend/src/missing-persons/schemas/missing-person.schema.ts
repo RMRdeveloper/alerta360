@@ -1,5 +1,5 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
-import { HydratedDocument } from 'mongoose';
+import { HydratedDocument, Types } from 'mongoose';
 
 export type MissingPersonDocument = HydratedDocument<MissingPerson>;
 
@@ -29,8 +29,8 @@ export class MissingPerson {
   @Prop({ default: 'missing' }) // missing, found, deceased
   status: string;
 
-  @Prop({ required: false })
-  reporterId?: string; // Optional now that auth is removed
+  @Prop({ type: Types.ObjectId, ref: 'User', required: false })
+  reporterId?: Types.ObjectId;
 
   @Prop({
     type: {
@@ -61,6 +61,15 @@ export class MissingPerson {
     coordinates: { type: [Number], index: '2dsphere' },
   })
   coordinates?: { type: string; coordinates: number[] };
+
+  @Prop({
+    type: {
+      amount: { type: Number, required: true },
+      currency: { type: String },
+    },
+    _id: false,
+  })
+  reward?: { amount: number; currency?: string };
 }
 
 export const MissingPersonSchema = SchemaFactory.createForClass(MissingPerson);

@@ -3,8 +3,10 @@ import { ref, computed, onMounted, watch } from 'vue';
 import { useRiskMap, type TimeFilter } from '../composables/useRiskMap';
 import { useGeolocation } from '../composables/useGeolocation';
 import api from '../services/api';
+import { apiRoutes } from '../constants/api.constants';
 import type { MissingPerson } from '../types';
 import MissingPersonSelector from '../components/MissingPersonSelector.vue';
+import { usePhotoUrl } from '../composables/usePhotoUrl';
 
 const mapContainer = ref<HTMLElement | null>(null);
 const isDrawerOpen = ref(false);
@@ -44,15 +46,8 @@ const selectedPerson = computed(() =>
   missingPersons.value.find(p => p._id === reportForm.value.missingPersonId)
 );
 
-const getPhotoUrl = (person: MissingPerson) => {
-  if (person.photos && person.photos.length > 0) {
-    const photoPath = person.photos[0];
-    if (photoPath.startsWith('http')) return photoPath;
-    const apiBaseUrl = import.meta.env.VITE_API_URL || 'http://localhost:3000';
-    return `${apiBaseUrl}${photoPath}`;
-  }
-  return '';
-};
+const { getPhotoUrl: getPhotoUrlFromPath } = usePhotoUrl();
+const getPhotoUrl = (person: MissingPerson) => getPhotoUrlFromPath(person.photos?.[0]);
 
 const handleLocateMe = async () => {
   try {
@@ -65,7 +60,7 @@ const handleLocateMe = async () => {
 
 const loadMissingPersons = async () => {
   try {
-    const response = await api.get('/missing-persons');
+    const response = await api.get(apiRoutes.missingPersons);
     missingPersons.value = response.data.filter((p: MissingPerson) => p.status === 'missing');
   } catch {
     // Silent fail
@@ -105,7 +100,7 @@ const submitReport = async () => {
     formData.append('description', reportForm.value.description);
     formData.append('reporterContact', reportForm.value.reporterContact);
 
-    await api.post('/sightings', formData, {
+    await api.post(apiRoutes.sightings, formData, {
       headers: { 'Content-Type': 'multipart/form-data' },
     });
 

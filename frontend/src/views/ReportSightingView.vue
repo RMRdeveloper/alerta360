@@ -3,6 +3,8 @@ import { ref, onMounted } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 import { useI18n } from 'vue-i18n';
 import api from '../services/api';
+import { apiRoutes } from '../constants/api.constants';
+import { routePaths } from '../constants/routes.constants';
 import type { MissingPerson } from '../types';
 import LocationPicker from '../components/LocationPicker.vue';
 import MissingPersonSelector from '../components/MissingPersonSelector.vue';
@@ -29,7 +31,7 @@ const loading = ref(false);
 
 onMounted(async () => {
   try {
-    const response = await api.get('/missing-persons');
+    const response = await api.get(apiRoutes.missingPersons);
     people.value = response.data;
     
     // Auto-select if passed in query
@@ -85,14 +87,14 @@ const submitForm = async () => {
       formData.append('photo', photoFile.value);
     }
 
-    await api.post('/sightings', formData, {
+    await api.post(apiRoutes.sightings, formData, {
       headers: {
         'Content-Type': 'multipart/form-data',
       },
     });
 
     alert(t('alerts.reportSuccess'));
-    router.push(`/missing/${form.value.missingPersonId}`);
+    router.push(routePaths.missingPersonDetail(form.value.missingPersonId));
   } catch (error) {
     console.error(error);
     alert(t('errors.reportFailed'));

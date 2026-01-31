@@ -22,7 +22,11 @@ export class CreateSightingDto {
   @IsOptional()
   description?: string;
 
-  @ApiPropertyOptional({ type: 'string', format: 'binary', description: 'Photo of the sighting' })
+  @ApiPropertyOptional({
+    type: 'string',
+    format: 'binary',
+    description: 'Photo of the sighting',
+  })
   @IsString()
   @IsOptional()
   photo?: string;

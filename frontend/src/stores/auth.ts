@@ -50,5 +50,21 @@ export const useAuthStore = defineStore('auth', () => {
     }
   }
 
-  return { user, isAuthenticated, checkAuth, login, register, logout };
+  async function updateProfile(data: {
+    firstName?: string;
+    lastName?: string;
+  }) {
+    const response = await api.patch('/auth/profile', data);
+    user.value = response.data;
+  }
+
+  return {
+    user,
+    isAuthenticated,
+    checkAuth,
+    login,
+    register,
+    logout,
+    updateProfile,
+  };
 });

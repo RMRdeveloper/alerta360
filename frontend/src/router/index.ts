@@ -9,6 +9,7 @@ import ReportSightingView from '../views/ReportSightingView.vue';
 import RiskMapView from '../views/RiskMapView.vue';
 import LoginView from '../views/LoginView.vue';
 import RegisterView from '../views/RegisterView.vue';
+import ProfileView from '../views/ProfileView.vue';
 import NotFoundView from '../views/NotFoundView.vue';
 
 const router = createRouter({
@@ -30,9 +31,16 @@ const router = createRouter({
       component: MissingPersonDetailView,
     },
     {
+      path: '/missing-persons/:id/edit',
+      name: 'edit-missing',
+      component: RegisterMissingView,
+      meta: { requiresAuth: true },
+    },
+    {
       path: '/register-missing',
       name: 'register-missing',
       component: RegisterMissingView,
+      meta: { requiresAuth: true },
     },
     {
       path: '/register-child',
@@ -62,6 +70,12 @@ const router = createRouter({
       meta: { layout: 'auth', guestOnly: true }
     },
     {
+      path: '/profile',
+      name: 'profile',
+      component: ProfileView,
+      meta: { requiresAuth: true },
+    },
+    {
       path: '/:pathMatch(.*)*',
       name: 'not-found',
       component: NotFoundView
@@ -69,15 +83,23 @@ const router = createRouter({
   ],
 });
 
-router.beforeEach((to, from, next) => {
+router.beforeEach(async (to, _from, next) => {
   const authStore = useAuthStore();
-  
-  // Check for guest-only routes (login, register)
-  if (to.meta.guestOnly && authStore.isAuthenticated) {
-    next({ name: 'home' }); // Redirect authenticated users to home
-  } else {
-    next();
+
+  if (to.meta.requiresAuth) {
+    const isAuth = await authStore.checkAuth();
+    if (!isAuth) {
+      next({ name: 'login', query: { returnUrl: to.fullPath } });
+      return;
+    }
   }
+
+  if (to.meta.guestOnly && authStore.isAuthenticated) {
+    next({ name: 'home' });
+    return;
+  }
+
+  next();
 });
 
 export default router;

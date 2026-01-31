@@ -35,7 +35,7 @@ onMounted(async () => {
 
         <h1 class="text-6xl lg:text-7xl font-extrabold tracking-tight text-secondary leading-[1.1]">
           {{ $t('home.title') }}
-          <span class="text-transparent bg-clip-text bg-primary-gradient">{{ $t('home.now') }}</span>
+          <span class="text-primary">{{ $t('home.now') }}</span>
         </h1>
         
         <p class="text-xl text-light max-w-xl leading-relaxed">

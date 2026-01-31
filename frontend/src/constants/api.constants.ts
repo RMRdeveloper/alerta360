@@ -1,0 +1,19 @@
+export const placeholderImageUrl =
+  'https://placehold.co/600x800/2d3436/ffffff?text=No+Image';
+
+export const apiRoutes = {
+  missingPersons: '/missing-persons',
+  missingPersonById: (id: string) => `/missing-persons/${id}`,
+  sightings: '/sightings',
+  sightingsByPersonId: (id: string) => `/sightings/person/${id}`,
+  authProfile: '/auth/profile',
+} as const;
+
+export const paginationConstants = {
+  defaultPageSize: 15,
+  pageSizeOptions: [15, 30, 45],
+} as const;
+
+export const uploadConstants = {
+  maxPhotosPerPost: 5,
+} as const;

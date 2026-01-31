@@ -6,7 +6,7 @@ import { CreateChildDto } from './dto/create-child.dto';
 
 @Injectable()
 export class ChildrenService {
-  constructor(@InjectModel(Child.name) private childModel: Model<Child>) { }
+  constructor(@InjectModel(Child.name) private childModel: Model<Child>) {}
 
   async create(createChildDto: CreateChildDto): Promise<Child> {
     const createdChild = new this.childModel(createChildDto);

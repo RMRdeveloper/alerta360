@@ -1,20 +1,14 @@
 <script setup lang="ts">
 import { defineProps } from 'vue';
+import { usePhotoUrl } from '../composables/usePhotoUrl';
+import { routeNames } from '../constants/routes.constants';
 import type { MissingPerson } from '../types';
 
 defineProps<{
   person: MissingPerson
 }>();
-const handleImageError = (event: Event) => {
-  const target = event.target as HTMLImageElement;
-  target.src = 'https://placehold.co/400x500/2d3436/ffffff?text=No+Image';
-};
 
-const getPhotoUrl = (photoPath?: string) => {
-  if (!photoPath) return 'https://placehold.co/400x500/2d3436/ffffff?text=No+Image';
-  if (photoPath.startsWith('http')) return photoPath;
-  return `http://localhost:3000${photoPath}`;
-};
+const { getPhotoUrl, handleImageError } = usePhotoUrl();
 </script>
 
 <template>
@@ -82,12 +76,28 @@ const getPhotoUrl = (photoPath?: string) => {
             </p>
           </div>
         </div>
+
+        <!-- Reward -->
+        <div v-if="person.reward" class="flex items-start gap-3">
+          <div class="p-2 bg-amber-50 rounded-lg text-amber-600 shrink-0">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+            </svg>
+          </div>
+          <div>
+            <p class="text-xs font-bold text-light uppercase tracking-wide">{{ $t('form.reward') }}</p>
+            <p class="font-semibold text-secondary text-sm">
+              {{ person.reward.amount.toLocaleString() }}
+              <span v-if="person.reward.currency">{{ person.reward.currency }}</span>
+            </p>
+          </div>
+        </div>
       </div>
 
       <!-- Action Button -->
       <div class="mt-6 pt-4 border-t border-border">
         <router-link 
-          :to="'/missing-persons/' + person._id" 
+          :to="{ name: routeNames.missingPersonDetail, params: { id: person._id } }" 
           class="flex items-center justify-center gap-2 w-full py-3 bg-white border-2 border-primary text-primary font-bold rounded-xl hover:bg-primary hover:text-white transition-all duration-300 group-hover:shadow-lg group-hover:shadow-primary/20"
         >
           {{ $t('missing.details') }}

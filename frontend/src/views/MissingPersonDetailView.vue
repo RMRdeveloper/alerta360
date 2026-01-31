@@ -1,80 +1,51 @@
 <script setup lang="ts">
-import { ref, onMounted } from 'vue';
+import { ref, computed, onMounted } from 'vue';
 import { useRoute } from 'vue-router';
 import { useI18n } from 'vue-i18n';
 import api from '../services/api';
-import type { MissingPerson } from '../types';
+import { apiRoutes } from '../constants/api.constants';
+import { routeNames } from '../constants/routes.constants';
+import { useAuthStore } from '../stores/auth';
+import { usePhotoUrl } from '../composables/usePhotoUrl';
+import { useShareProfile } from '../composables/useShareProfile';
+import type { MissingPerson, Sighting } from '../types';
 
-interface Sighting {
-  _id: string;
-  location: string;
-  date: string;
-  description: string;
-  photo?: string;
-}
+const authStore = useAuthStore();
 
 const route = useRoute();
-const { locale } = useI18n();
+const { locale, t } = useI18n();
 const person = ref<MissingPerson | null>(null);
 const sightings = ref<Sighting[]>([]);
 const loading = ref(true);
 const currentPhotoIndex = ref(0);
 const isFullscreen = ref(false);
 const selectedSightingPhoto = ref<string | null>(null);
-const isShareModalOpen = ref(false);
-const showCopiedTooltip = ref(false);
 
-const shareProfile = async () => {
-  if (!person.value) return;
-  
-  const shareData = {
-    title: `Alerta360: ${person.value.name}`,
-    text: `Ayuda a encontrar a ${person.value.name}. Desaparecido desde ${formatDate(person.value.lastSeenDate)}.`,
-    url: window.location.href,
-  };
-
-  if (navigator.share) {
-    try {
-      await navigator.share(shareData);
-    } catch (err) {
-      console.log('Error sharing:', err);
-    }
-  } else {
-    isShareModalOpen.value = true;
-  }
+const formatDate = (dateString: string) => {
+  return new Date(dateString).toLocaleDateString(locale.value, {
+    weekday: 'long',
+    year: 'numeric',
+    month: 'long',
+    day: 'numeric',
+  });
 };
 
-const copyLink = () => {
-  navigator.clipboard.writeText(window.location.href);
-  showCopiedTooltip.value = true;
-  setTimeout(() => {
-    showCopiedTooltip.value = false;
-  }, 2000);
+const getShareMessage = () => {
+  if (!person.value) return '';
+  return t('share.message', {
+    name: person.value.name,
+    date: formatDate(person.value.lastSeenDate),
+  });
 };
 
-const shareToSocial = (network: string) => {
-  if (!person.value) return;
-  
-  const url = encodeURIComponent(window.location.href);
-  const text = encodeURIComponent(`Ayuda a encontrar a ${person.value.name}. Desaparecido desde ${formatDate(person.value.lastSeenDate)}.`);
-  
-  let shareUrl = '';
-  switch (network) {
-    case 'whatsapp':
-      shareUrl = `https://wa.me/?text=${text}%20${url}`;
-      break;
-    case 'facebook':
-      shareUrl = `https://www.facebook.com/sharer/sharer.php?u=${url}`;
-      break;
-    case 'twitter':
-      shareUrl = `https://twitter.com/intent/tweet?text=${text}&url=${url}`;
-      break;
-  }
-  
-  if (shareUrl) {
-    window.open(shareUrl, '_blank');
-  }
-};
+const { getPhotoUrl, handleImageError, placeholderImageUrl } = usePhotoUrl();
+const {
+  shareProfile,
+  copyLink,
+  shareToSocial,
+  isShareModalOpen,
+  showCopiedTooltip,
+} = useShareProfile(person, getShareMessage);
 
 const nextPhoto = () => {
   if (person.value && person.value.photos) {
@@ -90,9 +61,11 @@ const prevPhoto = () => {
 
 onMounted(async () => {
   try {
+    const id = route.params.id as string;
+    await authStore.checkAuth();
     const [personRes, sightingsRes] = await Promise.all([
-      api.get(`/missing-persons/${route.params.id}`),
-      api.get(`/sightings/person/${route.params.id}`)
+      api.get(apiRoutes.missingPersonById(id)),
+      api.get(apiRoutes.sightingsByPersonId(id)),
     ]);
     person.value = personRes.data;
     sightings.value = sightingsRes.data;
@@ -107,21 +80,14 @@ const openSightingPhoto = (photo: string) => {
   selectedSightingPhoto.value = photo;
 };
 
-const formatDate = (dateString: string) => {
-  return new Date(dateString).toLocaleDateString(locale.value, { 
-    weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' 
-  });
-};
-const handleImageError = (event: Event) => {
-  const target = event.target as HTMLImageElement;
-  target.src = 'https://placehold.co/600x800/2d3436/ffffff?text=No+Image';
-};
-
-const getPhotoUrl = (photoPath?: string) => {
-  if (!photoPath) return 'https://placehold.co/600x800/2d3436/ffffff?text=No+Image';
-  if (photoPath.startsWith('http')) return photoPath;
-  return `http://localhost:3000${photoPath}`;
-};
+const isAuthor = computed(
+  () =>
+    !!(
+      person.value?.reporterId &&
+      authStore.user?._id &&
+      String(person.value.reporterId) === String(authStore.user._id)
+    ),
+);
 </script>
 
 <template>
@@ -157,7 +123,7 @@ const getPhotoUrl = (photoPath?: string) => {
             </template>
             <img 
               v-else
-              src="https://placehold.co/600x800/2d3436/ffffff?text=No+Image" 
+              :src="placeholderImageUrl" 
               :alt="person.name" 
               class="w-full h-full object-cover"
             />
@@ -228,7 +194,6 @@ const getPhotoUrl = (photoPath?: string) => {
 
       <!-- Fullscreen Modal -->
       <div v-if="isFullscreen" class="fixed inset-0 z-[100] bg-black/95 flex items-center justify-center" @click.self="isFullscreen = false">
-        <!-- ... (existing modal content) ... -->
         <button 
           @click="isFullscreen = false"
           class="absolute top-6 right-6 z-50 text-white/50 hover:text-white transition-colors"
@@ -378,6 +343,14 @@ const getPhotoUrl = (photoPath?: string) => {
               <p class="text-2xl font-bold text-secondary capitalize">{{ $t('attributes.eyes.' + person.eyes) }}</p>
             </div>
 
+            <div v-if="person.reward">
+              <label class="block text-sm font-semibold text-light mb-1">{{ $t('form.reward') }}</label>
+              <p class="text-2xl font-bold text-secondary">
+                {{ person.reward.amount.toLocaleString() }}
+                <span v-if="person.reward.currency" class="text-sm font-normal text-light">{{ person.reward.currency }}</span>
+              </p>
+            </div>
+
             <div class="col-span-2">
               <label class="block text-sm font-semibold text-light mb-1">{{ $t('missing.lastSeen') }}</label>
               <div class="flex items-center gap-2 text-secondary">
@@ -425,8 +398,18 @@ const getPhotoUrl = (photoPath?: string) => {
         </div>
 
         <div class="flex flex-col sm:flex-row gap-4 pt-4">
+          <router-link
+            v-if="isAuthor"
+            :to="{ name: routeNames.editMissing, params: { id: person._id } }"
+            class="flex-1 px-8 py-4 bg-secondary/10 text-secondary font-bold rounded-xl border-2 border-secondary/30 hover:border-secondary hover:bg-secondary/20 transition-all duration-300 flex items-center justify-center gap-2"
+          >
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+            </svg>
+            {{ $t('detail.edit') }}
+          </router-link>
           <router-link 
-            :to="{ path: '/report-sighting', query: { personId: person._id } }"
+            :to="{ name: routeNames.reportSighting, query: { personId: person._id } }"
             class="flex-1 px-8 py-4 bg-primary-gradient text-white text-center font-bold rounded-xl shadow-lg shadow-primary/30 hover:shadow-primary/40 hover:-translate-y-1 transition-all duration-300"
           >
             {{ $t('nav.report') }}

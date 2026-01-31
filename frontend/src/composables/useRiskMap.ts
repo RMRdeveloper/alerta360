@@ -1,5 +1,8 @@
 import { ref } from 'vue';
 import api from '../services/api';
+import { apiBaseUrl } from '../services/api';
+import { apiRoutes } from '../constants/api.constants';
+import { routePaths } from '../constants/routes.constants';
 import type { MissingPerson } from '../types';
 import { useGoogleMaps } from './useGoogleMaps';
 import {
@@ -31,7 +34,7 @@ export function useRiskMap() {
   const { loadScript } = useGoogleMaps();
 
   const fetchMissingPersons = async (): Promise<MissingPerson[]> => {
-    const response = await api.get('/missing-persons');
+    const response = await api.get(apiRoutes.missingPersons);
     const allCases: MissingPerson[] = response.data;
     const activeCases = allCases.filter((person) => person.status === 'missing');
     activeCasesCount.value = activeCases.length;
@@ -140,14 +143,13 @@ export function useRiskMap() {
   };
 
   const createInfoWindowContent = (person: MissingPerson): string => {
-    const apiBaseUrl = import.meta.env.VITE_API_URL || 'http://localhost:3000';
     const rawPhoto = person.photos?.[0] || '';
     const photo = rawPhoto.startsWith('/') ? `${apiBaseUrl}${rawPhoto}` : rawPhoto;
     const photoHtml = photo
       ? `<img src="${photo}" alt="${person.name}" style="width:100%;height:100px;object-fit:cover;" />`
       : `<div style="width:100%;height:60px;background:rgba(55,65,81,0.5);display:flex;align-items:center;justify-content:center;color:#9ca3af;font-size:11px;">Sin foto</div>`;
 
-    const shareUrl = `${window.location.origin}/missing-persons/${person._id}`;
+    const shareUrl = `${window.location.origin}${routePaths.missingPersonDetail(person._id)}`;
     const shareText = encodeURIComponent(`🔴 DESAPARECIDO: ${person.name}, ${person.age} años. Última vez visto en ${person.lastSeenLocation}. Si tienes información, por favor contacta.\n${shareUrl}`);
     const whatsappUrl = `https://wa.me/?text=${shareText}`;
 
@@ -169,7 +171,7 @@ export function useRiskMap() {
             <div>📅 ${formatDate(person.lastSeenDate)}</div>
           </div>
           <div style="display:flex;gap:6px;">
-            <a href="/missing-persons/${person._id}" style="flex:1;text-align:center;background:linear-gradient(135deg,#ef4444,#dc2626);color:#fff;padding:6px;border-radius:6px;text-decoration:none;font-size:10px;font-weight:600;">
+            <a href="${window.location.origin}${routePaths.missingPersonDetail(person._id)}" style="flex:1;text-align:center;background:linear-gradient(135deg,#ef4444,#dc2626);color:#fff;padding:6px;border-radius:6px;text-decoration:none;font-size:10px;font-weight:600;">
               Ver caso
             </a>
             <a href="${whatsappUrl}" target="_blank" style="display:flex;align-items:center;justify-content:center;background:#25D366;color:#fff;padding:6px 10px;border-radius:6px;text-decoration:none;">

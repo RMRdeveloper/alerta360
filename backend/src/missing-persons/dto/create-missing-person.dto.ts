@@ -1,7 +1,30 @@
-import { IsString, IsNumber, IsOptional, IsDate, IsArray, IsNotEmpty } from 'class-validator';
+import {
+  IsString,
+  IsNumber,
+  IsOptional,
+  IsDate,
+  IsArray,
+  IsNotEmpty,
+  ValidateNested,
+  Min,
+  ArrayMaxSize,
+} from 'class-validator';
 import { Type, Transform } from 'class-transformer';
 
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
+import { uploadConfig } from '../../config/app.config';
+
+export class RewardDto {
+  @ApiProperty({ description: 'Reward amount (must be >= 0)' })
+  @IsNumber()
+  @Min(0)
+  amount: number;
+
+  @ApiPropertyOptional({ description: 'Currency code (e.g. USD, EUR, MXN)' })
+  @IsOptional()
+  @IsString()
+  currency?: string;
+}
 
 export class CreateMissingPersonDto {
   @ApiProperty({ description: 'Full name of the missing person' })
@@ -14,7 +37,10 @@ export class CreateMissingPersonDto {
   @IsNumber()
   age: number;
 
-  @ApiProperty({ description: 'Gender of the missing person', enum: ['Male', 'Female', 'Other'] })
+  @ApiProperty({
+    description: 'Gender of the missing person',
+    enum: ['Male', 'Female', 'Other'],
+  })
   @IsString()
   @IsNotEmpty()
   gender: string;
@@ -29,23 +55,30 @@ export class CreateMissingPersonDto {
   @IsDate()
   lastSeenDate: Date;
 
-  @ApiPropertyOptional({ description: 'Physical description and other details' })
+  @ApiPropertyOptional({
+    description: 'Physical description and other details',
+  })
   @IsString()
   @IsOptional()
   description?: string;
 
-  @ApiPropertyOptional({ type: 'array', items: { type: 'string', format: 'binary' }, description: 'Photos of the missing person' })
-  @IsArray()
-  @IsString({ each: true })
+  @ApiPropertyOptional({
+    type: 'array',
+    items: { type: 'string', format: 'binary' },
+    description: `Photos of the missing person (max ${uploadConfig.maxPhotosPerPost})`,
+  })
   @IsOptional()
+  @IsArray()
+  @ArrayMaxSize(uploadConfig.maxPhotosPerPost)
+  @IsString({ each: true })
   photos?: string[];
 
-  @ApiPropertyOptional({ description: 'ID of the reporter (optional)' })
-  @IsOptional()
-  @IsString()
-  reporterId?: string;
-
-  @ApiPropertyOptional({ description: 'Height of the person', type: 'object', additionalProperties: true, example: { value: 180, unit: 'cm' } })
+  @ApiPropertyOptional({
+    description: 'Height of the person',
+    type: 'object',
+    additionalProperties: true,
+    example: { value: 180, unit: 'cm' },
+  })
   @IsOptional()
   @Transform(({ value }) => {
     if (typeof value === 'string') {
@@ -59,7 +92,12 @@ export class CreateMissingPersonDto {
   })
   height?: { value: number; unit: string };
 
-  @ApiPropertyOptional({ description: 'Hair characteristics', type: 'object', additionalProperties: true, example: { color: 'Black', length: 'Short' } })
+  @ApiPropertyOptional({
+    description: 'Hair characteristics',
+    type: 'object',
+    additionalProperties: true,
+    example: { color: 'Black', length: 'Short' },
+  })
   @IsOptional()
   @Transform(({ value }) => {
     if (typeof value === 'string') {
@@ -83,7 +121,12 @@ export class CreateMissingPersonDto {
   @IsString()
   build?: string;
 
-  @ApiPropertyOptional({ description: 'GeoJSON coordinates', type: 'object', additionalProperties: true, example: { type: 'Point', coordinates: [-58.3816, -34.6037] } })
+  @ApiPropertyOptional({
+    description: 'GeoJSON coordinates',
+    type: 'object',
+    additionalProperties: true,
+    example: { type: 'Point', coordinates: [-58.3816, -34.6037] },
+  })
   @IsOptional()
   @Transform(({ value }) => {
     if (typeof value === 'string') {
@@ -96,4 +139,24 @@ export class CreateMissingPersonDto {
     return value;
   })
   coordinates?: { type: string; coordinates: number[] };
+
+  @ApiPropertyOptional({
+    description: 'Optional reward for information',
+    type: RewardDto,
+    example: { amount: 1000, currency: 'USD' },
+  })
+  @IsOptional()
+  @ValidateNested()
+  @Type(() => RewardDto)
+  @Transform(({ value }) => {
+    if (typeof value === 'string') {
+      try {
+        return JSON.parse(value);
+      } catch {
+        return value;
+      }
+    }
+    return value;
+  })
+  reward?: RewardDto;
 }

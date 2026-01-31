@@ -1,4 +1,10 @@
-import { IsString, IsNumber, IsOptional, IsArray, IsNotEmpty } from 'class-validator';
+import {
+  IsString,
+  IsNumber,
+  IsOptional,
+  IsArray,
+  IsNotEmpty,
+} from 'class-validator';
 import { Type } from 'class-transformer';
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 
@@ -13,7 +19,11 @@ export class CreateChildDto {
   @IsNumber()
   age: number;
 
-  @ApiPropertyOptional({ type: 'array', items: { type: 'string', format: 'binary' }, description: 'Photos of the child' })
+  @ApiPropertyOptional({
+    type: 'array',
+    items: { type: 'string', format: 'binary' },
+    description: 'Photos of the child',
+  })
   @IsArray()
   @IsString({ each: true })
   @IsOptional()

@@ -8,7 +8,11 @@ export type SightingDocument = HydratedDocument<Sighting>;
   toJSON: {
     transform: (doc, ret: any) => {
       // transform missingPersonId to missingPerson if populated
-      if (ret.missingPersonId && (typeof ret.missingPersonId === 'object' || ret.missingPersonId.coordinates)) {
+      if (
+        ret.missingPersonId &&
+        (typeof ret.missingPersonId === 'object' ||
+          ret.missingPersonId.coordinates)
+      ) {
         ret.missingPerson = ret.missingPersonId;
         delete ret.missingPersonId;
       }

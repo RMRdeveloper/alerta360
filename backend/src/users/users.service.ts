@@ -19,4 +19,13 @@ export class UsersService {
   async findByGoogleId(googleId: string): Promise<UserDocument | undefined> {
     return this.userModel.findOne({ googleId }).exec();
   }
+
+  async updateById(
+    id: string,
+    data: Partial<Pick<User, 'firstName' | 'lastName'>>,
+  ): Promise<UserDocument | null> {
+    return this.userModel
+      .findByIdAndUpdate(id, { $set: data }, { new: true })
+      .exec();
+  }
 }

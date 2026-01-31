@@ -1,11 +1,27 @@
-import { Controller, Get, Post, Body, Param, UseInterceptors, UploadedFile, Inject } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Param,
+  UseInterceptors,
+  UploadedFile,
+  Inject,
+} from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { SightingsService } from './sightings.service';
 import { CreateSightingDto } from './dto/create-sighting.dto';
+import { SightingResponseDto } from './dto/sighting-response.dto';
 import { IStorageService } from '../storage/storage.interface';
 import { Express } from 'express';
 
-import { ApiTags, ApiOperation, ApiConsumes, ApiBody, ApiResponse } from '@nestjs/swagger';
+import {
+  ApiTags,
+  ApiOperation,
+  ApiConsumes,
+  ApiBody,
+  ApiResponse,
+} from '@nestjs/swagger';
 
 @ApiTags('sightings')
 @Controller('sightings')
@@ -13,7 +29,7 @@ export class SightingsController {
   constructor(
     private readonly sightingsService: SightingsService,
     @Inject(IStorageService) private readonly storageService: IStorageService,
-  ) { }
+  ) {}
 
   @Post()
   @ApiOperation({ summary: 'Report a sighting' })
@@ -22,7 +38,10 @@ export class SightingsController {
     description: 'Sighting report data',
     type: CreateSightingDto,
   })
-  @ApiResponse({ status: 201, description: 'The sighting has been successfully reported.' })
+  @ApiResponse({
+    status: 201,
+    description: 'The sighting has been successfully reported.',
+  })
   @UseInterceptors(FileInterceptor('photo'))
   async create(
     @Body() createSightingDto: CreateSightingDto,
@@ -37,14 +56,23 @@ export class SightingsController {
 
   @Get()
   @ApiOperation({ summary: 'Get all sightings' })
-  @ApiResponse({ status: 200, description: 'List of all sightings.' })
+  @ApiResponse({
+    status: 200,
+    description: 'List of all sightings.',
+    type: [SightingResponseDto],
+  })
   findAll() {
     return this.sightingsService.findAll();
   }
 
   @Get('person/:id')
   @ApiOperation({ summary: 'Get sightings for a specific missing person' })
-  @ApiResponse({ status: 200, description: 'List of sightings for the missing person.' })
+  @ApiResponse({
+    status: 200,
+    description: 'List of sightings for the missing person.',
+    type: [SightingResponseDto],
+  })
+  @ApiResponse({ status: 404, description: 'Missing person not found.' })
   findByMissingPerson(@Param('id') id: string) {
     return this.sightingsService.findByMissingPerson(id);
   }

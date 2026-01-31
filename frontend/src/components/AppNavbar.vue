@@ -3,6 +3,7 @@ import { ref, onMounted, onUnmounted, computed } from 'vue';
 import { useI18n } from 'vue-i18n';
 import { useAuthStore } from '../stores/auth';
 import { storeToRefs } from 'pinia';
+import { routePaths } from '../constants/routes.constants';
 
 const { locale } = useI18n();
 const isScrolled = ref(false);
@@ -135,13 +136,17 @@ const displayName = computed(() => {
               class="absolute right-0 mt-2 w-48 bg-white rounded-xl shadow-xl border border-gray-100 py-1 overflow-hidden transform origin-top-right transition-all animate-fade-in-down"
             >
               <div class="px-4 py-3 border-b border-gray-50">
-                <p class="text-xs text-gray-500">Signed in as</p>
+                <p class="text-xs text-gray-500">{{ $t('profile.signedInAs') }}</p>
                 <p class="text-sm font-bold text-secondary truncate">{{ user?.email }}</p>
               </div>
               
-              <a href="#" class="block px-4 py-2 text-sm text-gray-600 hover:bg-gray-50 hover:text-primary transition-colors">
-                Profile Settings
-              </a>
+              <router-link
+                :to="routePaths.profile"
+                @click="isProfileOpen = false"
+                class="block px-4 py-2 text-sm text-gray-600 hover:bg-gray-50 hover:text-primary transition-colors"
+              >
+                {{ $t('profile.settings') }}
+              </router-link>
               <div class="border-t border-gray-50 my-1"></div>
               <button 
                 @click="handleLogout"
@@ -150,7 +155,7 @@ const displayName = computed(() => {
                 <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h7a3 3 0 013 3v1" />
                 </svg>
-                Sign out
+                {{ $t('profile.signOut') }}
               </button>
             </div>
           </div>

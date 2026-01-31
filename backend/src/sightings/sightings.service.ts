@@ -6,7 +6,9 @@ import { CreateSightingDto } from './dto/create-sighting.dto';
 
 @Injectable()
 export class SightingsService {
-  constructor(@InjectModel(Sighting.name) private sightingModel: Model<Sighting>) { }
+  constructor(
+    @InjectModel(Sighting.name) private sightingModel: Model<Sighting>,
+  ) {}
 
   async create(createSightingDto: CreateSightingDto): Promise<Sighting> {
     const createdSighting = new this.sightingModel(createSightingDto);
