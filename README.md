@@ -10,7 +10,7 @@
 - **Child Registration**: Secure registration for minors to preemptively store vital information.
 - **Glossary**: Search terms and definitions related to missing persons cases.
 - **Share Profile**: Share missing person profiles via Web Share API or copy link.
-- **Image Moderation**: Automatic validation of uploaded images (NSFW.js) before publication.
+- **Image Moderation**: Automatic validation of uploaded images (NSFW.js) before publication. A dedicated endpoint (`POST /image-moderation/check`) allows external services and apps to validate images before submitting content to the API.
 - **Google OAuth**: Sign in with Google in addition to email/password.
 - **Real-time Search**: Advanced filtering by name, age, gender, and status.
 - **Internationalization**: Full support for English and Spanish (ES/EN).

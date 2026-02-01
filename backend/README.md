@@ -21,7 +21,7 @@ NestJS API for the Alerta360 platform: missing persons registry, sighting report
 | `children` | Child registration (preemptive) |
 | `statistics` | Stats for risk map and dashboard |
 | `glossary` | Search terms and definitions |
-| `image-moderation` | Image validation (NSFW.js) |
+| `image-moderation` | Image validation (NSFW.js); exposes `POST /image-moderation/check` for external validation before submitting content |
 | `storage` | File upload and serving |
 | `users` | User management |
 
@@ -72,6 +72,12 @@ Copy `.env.example` to `.env` and configure:
 With the server running, API documentation is available at:
 
 **http://localhost:3000/api/docs**
+
+### Image moderation (external use)
+
+External services and applications can validate images for adult content before submitting them to missing-persons or sightings:
+
+- **POST** `/image-moderation/check` — `multipart/form-data` with field `image` (file). Returns `{ "safe": true }` or `{ "safe": false }`. No authentication required.
 
 ## Project Structure
 

@@ -7,8 +7,9 @@ import {
   IsString,
   IsNumber,
   IsDate,
+  IsBoolean,
 } from 'class-validator';
-import { Type } from 'class-transformer';
+import { Type, Transform } from 'class-transformer';
 import { ApiPropertyOptional } from '@nestjs/swagger';
 import { paginationConfig, rewardCurrencies } from '../../config/app.config';
 
@@ -205,4 +206,13 @@ export class MissingPersonsQueryDto {
   @IsOptional()
   @IsIn(rewardCurrencies)
   rewardCurrency?: string;
+
+  @ApiPropertyOptional({
+    description: 'Filter to persons that have at least one sighting report',
+    type: Boolean,
+  })
+  @IsOptional()
+  @Transform(({ value }) => value === 'true' || value === true)
+  @IsBoolean()
+  hasSightings?: boolean;
 }

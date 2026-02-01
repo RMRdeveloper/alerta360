@@ -31,6 +31,7 @@ const filterForm = ref({
   status: '' as string,
   sort: '' as string,
   gender: '' as string,
+  hasSightings: false,
   minAge: null as number | null,
   maxAge: null as number | null,
   lastSeenFrom: null as Date | string | null,
@@ -70,6 +71,7 @@ function buildParams(): Record<string, string | number> {
   if (filterForm.value.sort) params.sort = filterForm.value.sort;
   if (filterForm.value.name?.trim()) params.name = filterForm.value.name.trim();
   if (filterForm.value.gender) params.gender = filterForm.value.gender;
+  if (filterForm.value.hasSightings) params.hasSightings = 'true';
   if (filterForm.value.minAge != null) params.minAge = filterForm.value.minAge;
   if (filterForm.value.maxAge != null) params.maxAge = filterForm.value.maxAge;
 
@@ -114,6 +116,7 @@ function hasActiveFilters(): boolean {
     filterForm.value.status ||
     filterForm.value.sort ||
     filterForm.value.gender ||
+    filterForm.value.hasSightings ||
     filterForm.value.minAge != null ||
     filterForm.value.maxAge != null ||
     filterForm.value.lastSeenFrom ||
@@ -135,6 +138,7 @@ function clearFilters() {
     status: '',
     sort: '',
     gender: '',
+    hasSightings: false,
     minAge: null,
     maxAge: null,
     lastSeenFrom: null,
@@ -236,6 +240,21 @@ onMounted(() => {
             <option value="">—</option>
             <option value="recent">{{ $t('filters.recent') }}</option>
           </select>
+        </div>
+
+        <!-- With sighting reports -->
+        <div class="space-y-2">
+          <label
+            class="flex items-center gap-2 cursor-pointer text-sm text-secondary"
+          >
+            <input
+              v-model="filterForm.hasSightings"
+              type="checkbox"
+              @change="applyFilters"
+              class="rounded border-border text-primary focus:ring-primary/20"
+            />
+            {{ $t('filters.hasSightings') }}
+          </label>
         </div>
 
         <!-- Name search -->
@@ -644,6 +663,18 @@ onMounted(() => {
                 <option value="found">{{ $t('filters.found') }}</option>
                 <option value="deceased">{{ $t('filters.deceased') }}</option>
               </select>
+            </div>
+            <div class="space-y-2">
+              <label
+                class="flex items-center gap-2 cursor-pointer text-sm text-secondary"
+              >
+                <input
+                  v-model="filterForm.hasSightings"
+                  type="checkbox"
+                  class="rounded border-border text-primary focus:ring-primary/20"
+                />
+                {{ $t('filters.hasSightings') }}
+              </label>
             </div>
             <div class="space-y-2">
               <label class="block text-xs font-medium text-secondary">

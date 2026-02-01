@@ -49,6 +49,7 @@ const messages = {
       heightUnit: 'Height unit',
       minRewardAmount: 'Min reward amount',
       rewardCurrency: 'Currency',
+      hasSightings: 'With sighting reports',
       clearFilters: 'Clear filters',
     },
     pagination: {
@@ -364,6 +365,7 @@ const messages = {
       heightUnit: 'Unidad de altura',
       minRewardAmount: 'Recompensa mínima',
       rewardCurrency: 'Moneda',
+      hasSightings: 'Con reportes de avistamientos',
       clearFilters: 'Limpiar filtros',
     },
     pagination: {

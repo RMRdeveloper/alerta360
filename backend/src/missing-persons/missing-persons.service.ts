@@ -2,6 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { FilterQuery, Model, Types } from 'mongoose';
 import { MissingPerson } from './schemas/missing-person.schema';
+import { Sighting } from '../sightings/schemas/sighting.schema';
 import { CreateMissingPersonDto } from './dto/create-missing-person.dto';
 import { MissingPersonsQueryDto } from './dto/missing-persons-query.dto';
 import { paginationConfig } from '../config/app.config';
@@ -11,6 +12,8 @@ export class MissingPersonsService {
   constructor(
     @InjectModel(MissingPerson.name)
     private missingPersonModel: Model<MissingPerson>,
+    @InjectModel(Sighting.name)
+    private sightingModel: Model<Sighting>,
   ) {}
 
   async create(
@@ -40,6 +43,14 @@ export class MissingPersonsService {
     const sort = query.sort ?? 'recent';
 
     const filter = this.buildFilter(query);
+
+    if (query.hasSightings === true) {
+      const idsWithSightings = await this.sightingModel
+        .distinct('missingPersonId')
+        .exec();
+      filter._id = { $in: idsWithSightings };
+    }
+
     const sortOptions =
       sort === 'recent'
         ? { createdAt: -1 as const }

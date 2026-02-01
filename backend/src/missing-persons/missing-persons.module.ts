@@ -6,6 +6,7 @@ import {
   MissingPerson,
   MissingPersonSchema,
 } from './schemas/missing-person.schema';
+import { Sighting, SightingSchema } from '../sightings/schemas/sighting.schema';
 import { StorageModule } from '../storage/storage.module';
 import { AuthModule } from '../auth/auth.module';
 import { ImageModerationModule } from '../image-moderation/image-moderation.module';
@@ -14,6 +15,7 @@ import { ImageModerationModule } from '../image-moderation/image-moderation.modu
   imports: [
     MongooseModule.forFeature([
       { name: MissingPerson.name, schema: MissingPersonSchema },
+      { name: Sighting.name, schema: SightingSchema },
     ]),
     StorageModule,
     AuthModule,
