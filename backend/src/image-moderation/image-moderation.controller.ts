@@ -14,6 +14,7 @@ import {
   ApiResponse,
 } from '@nestjs/swagger';
 import { ImageModerationService } from './image-moderation.service';
+import { imageModerationSwaggerDescriptions } from './image-moderation.constants';
 import { ModerationCheckResponseDto } from './dto/moderation-check-response.dto';
 import { Express } from 'express';
 
@@ -33,9 +34,8 @@ export class ImageModerationController {
   @Post('check')
   @UseInterceptors(FileInterceptor(imageFormFieldName))
   @ApiOperation({
-    summary: 'Check image for adult content',
-    description:
-      'Validates an image for adult/inappropriate content. Use this before submitting images to missing-persons or sightings endpoints.',
+    summary: imageModerationSwaggerDescriptions.checkSummary,
+    description: imageModerationSwaggerDescriptions.checkDescription,
   })
   @ApiConsumes('multipart/form-data')
   @ApiBody({
@@ -46,19 +46,19 @@ export class ImageModerationController {
         [imageFormFieldName]: {
           type: 'string',
           format: 'binary',
-          description: 'Image file to validate',
+          description: imageModerationSwaggerDescriptions.imageFileToValidate,
         },
       },
     },
   })
   @ApiResponse({
     status: 200,
-    description: 'Moderation result.',
+    description: imageModerationSwaggerDescriptions.moderationResult,
     type: ModerationCheckResponseDto,
   })
   @ApiResponse({
     status: 400,
-    description: 'No file provided or invalid request.',
+    description: imageModerationSwaggerDescriptions.noFileOrInvalidRequest,
   })
   async check(
     @UploadedFile() file?: Express.Multer.File,

@@ -4,6 +4,7 @@ import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { Request } from 'express';
 import { UsersService } from '../../users/users.service';
+import { authCookieName } from '../auth.constants';
 
 @Injectable()
 export class JwtStrategy extends PassportStrategy(Strategy) {
@@ -16,7 +17,7 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
         (request: Request) => {
           let token = null;
           if (request && request.cookies) {
-            token = request.cookies['360alert_authentication'];
+            token = request.cookies[authCookieName];
           }
           return token || ExtractJwt.fromAuthHeaderAsBearerToken()(request);
         },

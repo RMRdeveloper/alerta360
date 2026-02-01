@@ -24,13 +24,18 @@ import { MissingPersonResponseDto } from './dto/missing-person-response.dto';
 import { MissingPersonsQueryDto } from './dto/missing-persons-query.dto';
 import { PaginatedMissingPersonsDto } from './dto/paginated-missing-persons.dto';
 import { IStorageService } from '../storage/storage.interface';
-import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
+import { FirebaseOrJwtAuthGuard } from '../auth/guards/firebase-or-jwt-auth.guard';
 import {
   uploadConfig,
   moderationMessages,
   imageModerationErrorCode,
 } from '../config/app.config';
 import { ImageModerationService } from '../image-moderation/image-moderation.service';
+import {
+  missingPersonsMessages,
+  missingPersonsSwaggerDescriptions,
+} from './missing-persons.constants';
+import { swaggerDescriptions } from '../constants/swagger.constants';
 
 import {
   ApiTags,
@@ -51,20 +56,20 @@ export class MissingPersonsController {
   ) {}
 
   @Post()
-  @UseGuards(JwtAuthGuard)
+  @UseGuards(FirebaseOrJwtAuthGuard)
   @ApiOperation({ summary: 'Register a new missing person' })
   @ApiConsumes('multipart/form-data')
   @ApiBody({
-    description: 'Missing person registration data',
+    description: missingPersonsSwaggerDescriptions.registerData,
     type: CreateMissingPersonDto,
   })
   @ApiResponse({
     status: 201,
-    description: 'The missing person has been successfully registered.',
+    description: missingPersonsSwaggerDescriptions.registeredSuccess,
   })
   @ApiResponse({
     status: 400,
-    description: `Maximum ${uploadConfig.maxPhotosPerPost} photos allowed per post.`,
+    description: missingPersonsMessages.getMaxPhotosExceeded(),
   })
   @ApiResponse({
     status: 400,
@@ -73,12 +78,12 @@ export class MissingPersonsController {
   @UseInterceptors(FilesInterceptor('photos'))
   async create(
     @Body() createMissingPersonDto: CreateMissingPersonDto,
+    @Request() req: { user: { _id: string } },
     @UploadedFiles() files?: Express.Multer.File[],
-    @Request() req?: { user: { _id: string } },
   ) {
     if (files && files.length > uploadConfig.maxPhotosPerPost) {
       throw new BadRequestException(
-        `Maximum ${uploadConfig.maxPhotosPerPost} photos allowed per post`,
+        missingPersonsMessages.getMaxPhotosExceeded(),
       );
     }
 
@@ -99,7 +104,7 @@ export class MissingPersonsController {
     }
     return this.missingPersonsService.create(
       createMissingPersonDto,
-      req!.user._id,
+      req.user._id,
     );
   }
 
@@ -108,7 +113,7 @@ export class MissingPersonsController {
   @ApiQuery({ type: MissingPersonsQueryDto })
   @ApiResponse({
     status: 200,
-    description: 'Paginated list of missing persons.',
+    description: missingPersonsSwaggerDescriptions.paginatedList,
     type: PaginatedMissingPersonsDto,
   })
   findAll(@Query() query: MissingPersonsQueryDto) {
@@ -119,30 +124,33 @@ export class MissingPersonsController {
   @ApiOperation({ summary: 'Get a missing person by ID' })
   @ApiResponse({
     status: 200,
-    description: 'The missing person details.',
+    description: missingPersonsSwaggerDescriptions.details,
     type: MissingPersonResponseDto,
   })
-  @ApiResponse({ status: 404, description: 'Missing person not found.' })
+  @ApiResponse({
+    status: 404,
+    description: swaggerDescriptions.missingPersonNotFound,
+  })
   findOne(@Param('id') id: string) {
     return this.missingPersonsService.findOne(id);
   }
 
   @Put(':id')
-  @UseGuards(JwtAuthGuard)
+  @UseGuards(FirebaseOrJwtAuthGuard)
   @UseInterceptors(FilesInterceptor('photos'))
   @ApiOperation({ summary: 'Update a missing person (author only)' })
   @ApiConsumes('multipart/form-data')
   @ApiBody({
-    description: 'Fields to update',
+    description: missingPersonsSwaggerDescriptions.fieldsToUpdate,
     type: UpdateMissingPersonDto,
   })
   @ApiResponse({
     status: 200,
-    description: 'The missing person has been successfully updated.',
+    description: missingPersonsSwaggerDescriptions.updatedSuccess,
   })
   @ApiResponse({
     status: 400,
-    description: `Maximum ${uploadConfig.maxPhotosPerPost} photos allowed per post.`,
+    description: missingPersonsMessages.getMaxPhotosExceeded(),
   })
   @ApiResponse({
     status: 400,
@@ -150,23 +158,27 @@ export class MissingPersonsController {
   })
   @ApiResponse({
     status: 403,
-    description: 'Not the author of this publication.',
+    description: missingPersonsMessages.onlyAuthorCanEdit,
   })
-  @ApiResponse({ status: 404, description: 'Missing person not found.' })
+  @ApiResponse({
+    status: 404,
+    description: swaggerDescriptions.missingPersonNotFound,
+  })
   async update(
     @Param('id') id: string,
     @Body() updateMissingPersonDto: UpdateMissingPersonDto,
+    @Request() req: { user: { _id: string } },
     @UploadedFiles() files?: Express.Multer.File[],
-    @Request() req?: { user: { _id: string } },
   ) {
-    const doc = await this.missingPersonsService.findOne(id);
-    if (!doc) throw new NotFoundException('Missing person not found');
+    const missingPerson = await this.missingPersonsService.findOne(id);
+    if (!missingPerson)
+      throw new NotFoundException(missingPersonsMessages.notFound);
 
-    const reporterIdStr = doc.reporterId?.toString?.() ?? doc.reporterId;
-    const userIdStr = req!.user._id?.toString?.() ?? String(req!.user._id);
-    if (!reporterIdStr || reporterIdStr !== userIdStr) {
-      throw new ForbiddenException('Only the author can edit this publication');
-    }
+    this.ensureUserIsAuthor(
+      missingPerson,
+      req.user._id,
+      missingPersonsMessages.onlyAuthorCanEdit,
+    );
 
     const existingPhotos =
       (updateMissingPersonDto.existingPhotos as string[] | undefined) ?? [];
@@ -175,7 +187,7 @@ export class MissingPersonsController {
 
     if (totalPhotos > uploadConfig.maxPhotosPerPost) {
       throw new BadRequestException(
-        `Maximum ${uploadConfig.maxPhotosPerPost} photos allowed per post`,
+        missingPersonsMessages.getMaxPhotosExceeded(),
       );
     }
 
@@ -205,32 +217,47 @@ export class MissingPersonsController {
   }
 
   @Delete(':id')
-  @UseGuards(JwtAuthGuard)
+  @UseGuards(FirebaseOrJwtAuthGuard)
   @ApiOperation({ summary: 'Delete a missing person (author only)' })
   @ApiResponse({
     status: 200,
-    description: 'The missing person has been successfully deleted.',
+    description: missingPersonsSwaggerDescriptions.deletedSuccess,
   })
   @ApiResponse({
     status: 403,
-    description: 'Not the author of this publication.',
+    description: missingPersonsMessages.onlyAuthorCanDelete,
   })
-  @ApiResponse({ status: 404, description: 'Missing person not found.' })
+  @ApiResponse({
+    status: 404,
+    description: swaggerDescriptions.missingPersonNotFound,
+  })
   async remove(
     @Param('id') id: string,
-    @Request() req?: { user: { _id: string } },
+    @Request() req: { user: { _id: string } },
   ) {
-    const doc = await this.missingPersonsService.findOne(id);
-    if (!doc) throw new NotFoundException('Missing person not found');
+    const missingPerson = await this.missingPersonsService.findOne(id);
+    if (!missingPerson)
+      throw new NotFoundException(missingPersonsMessages.notFound);
 
-    const reporterIdStr = doc.reporterId?.toString?.() ?? doc.reporterId;
-    const userIdStr = req!.user._id?.toString?.() ?? String(req!.user._id);
-    if (!reporterIdStr || reporterIdStr !== userIdStr) {
-      throw new ForbiddenException(
-        'Only the author can delete this publication',
-      );
-    }
+    this.ensureUserIsAuthor(
+      missingPerson,
+      req.user._id,
+      missingPersonsMessages.onlyAuthorCanDelete,
+    );
 
     return this.missingPersonsService.remove(id);
+  }
+
+  private ensureUserIsAuthor(
+    missingPerson: { reporterId?: { toString?: () => string } | string },
+    userId: string,
+    forbiddenMessage: string,
+  ): void {
+    const reporterIdStr =
+      missingPerson.reporterId?.toString?.() ?? missingPerson.reporterId;
+    const userIdStr = userId?.toString?.() ?? String(userId);
+    if (!reporterIdStr || reporterIdStr !== userIdStr) {
+      throw new ForbiddenException(forbiddenMessage);
+    }
   }
 }

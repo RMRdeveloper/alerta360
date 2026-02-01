@@ -1,5 +1,6 @@
 import { Controller, Get } from '@nestjs/common';
 import { ApiTags, ApiOperation, ApiResponse } from '@nestjs/swagger';
+import { statisticsSwaggerDescriptions } from './statistics.constants';
 import { StatisticsService } from './statistics.service';
 import { StatsResponseDto } from './dto/stats-response.dto';
 
@@ -12,7 +13,7 @@ export class StatisticsController {
   @ApiOperation({ summary: 'Get statistics' })
   @ApiResponse({
     status: 200,
-    description: 'Statistics data.',
+    description: statisticsSwaggerDescriptions.statisticsData,
     type: StatsResponseDto,
   })
   getStats() {

@@ -18,6 +18,8 @@ import {
   moderationMessages,
   imageModerationErrorCode,
 } from '../config/app.config';
+import { sightingsSwaggerDescriptions } from './sightings.constants';
+import { swaggerDescriptions } from '../constants/swagger.constants';
 import { ImageModerationService } from '../image-moderation/image-moderation.service';
 import { Express } from 'express';
 
@@ -42,12 +44,12 @@ export class SightingsController {
   @ApiOperation({ summary: 'Report a sighting' })
   @ApiConsumes('multipart/form-data')
   @ApiBody({
-    description: 'Sighting report data',
+    description: sightingsSwaggerDescriptions.reportData,
     type: CreateSightingDto,
   })
   @ApiResponse({
     status: 201,
-    description: 'The sighting has been successfully reported.',
+    description: sightingsSwaggerDescriptions.reportedSuccess,
   })
   @ApiResponse({
     status: 400,
@@ -76,7 +78,7 @@ export class SightingsController {
   @ApiOperation({ summary: 'Get all sightings' })
   @ApiResponse({
     status: 200,
-    description: 'List of all sightings.',
+    description: sightingsSwaggerDescriptions.listAll,
     type: [SightingResponseDto],
   })
   findAll() {
@@ -87,10 +89,13 @@ export class SightingsController {
   @ApiOperation({ summary: 'Get sightings for a specific missing person' })
   @ApiResponse({
     status: 200,
-    description: 'List of sightings for the missing person.',
+    description: sightingsSwaggerDescriptions.listForMissingPerson,
     type: [SightingResponseDto],
   })
-  @ApiResponse({ status: 404, description: 'Missing person not found.' })
+  @ApiResponse({
+    status: 404,
+    description: swaggerDescriptions.missingPersonNotFound,
+  })
   findByMissingPerson(@Param('id') id: string) {
     return this.sightingsService.findByMissingPerson(id);
   }

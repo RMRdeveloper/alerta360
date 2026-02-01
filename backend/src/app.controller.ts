@@ -4,6 +4,7 @@ import { MissingPersonsService } from './missing-persons/missing-persons.service
 import { SightingsService } from './sightings/sightings.service';
 
 import { ApiTags, ApiOperation, ApiResponse } from '@nestjs/swagger';
+import { swaggerDescriptions } from './constants/swagger.constants';
 import { StatsResponseDto } from './statistics/dto/stats-response.dto';
 
 @ApiTags('app')
@@ -19,7 +20,7 @@ export class AppController {
   @ApiOperation({ summary: 'Health check' })
   @ApiResponse({
     status: 200,
-    description: 'Health check OK.',
+    description: swaggerDescriptions.healthCheckOk,
     schema: { type: 'string' },
   })
   getHello(): string {
@@ -30,7 +31,7 @@ export class AppController {
   @ApiOperation({ summary: 'Get application statistics' })
   @ApiResponse({
     status: 200,
-    description: 'Application statistics.',
+    description: swaggerDescriptions.applicationStatistics,
     type: StatsResponseDto,
   })
   async getStats() {

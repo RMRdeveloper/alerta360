@@ -9,27 +9,43 @@ import {
   Res,
 } from '@nestjs/common';
 import { Response } from 'express';
+import { ConfigService } from '@nestjs/config';
 import { ApiTags, ApiOperation, ApiBody, ApiResponse } from '@nestjs/swagger';
 import { LocalAuthGuard } from './guards/local-auth.guard';
 import { GoogleAuthGuard } from './guards/google-auth.guard';
-import { JwtAuthGuard } from './guards/jwt-auth.guard';
+import { FirebaseOrJwtAuthGuard } from './guards/firebase-or-jwt-auth.guard';
 import { AuthService } from './auth.service';
 import { LoginDto } from './dto/login.dto';
 import { RegisterDto } from './dto/register.dto';
 import { UserProfileResponseDto } from './dto/user-profile-response.dto';
 import { UpdateProfileDto } from './dto/update-profile.dto';
+import {
+  authCookieName,
+  defaultFrontendUrl,
+  authSwaggerDescriptions,
+} from './auth.constants';
+import { swaggerDescriptions } from '../constants/swagger.constants';
 
 @ApiTags('auth')
 @Controller('auth')
 export class AuthController {
-  constructor(private authService: AuthService) {}
+  constructor(
+    private authService: AuthService,
+    private configService: ConfigService,
+  ) {}
 
   @UseGuards(LocalAuthGuard)
   @Post('login')
   @ApiOperation({ summary: 'Login with email and password' })
   @ApiBody({ type: LoginDto })
-  @ApiResponse({ status: 200, description: 'Login successful.' })
-  @ApiResponse({ status: 401, description: 'Invalid credentials.' })
+  @ApiResponse({
+    status: 200,
+    description: authSwaggerDescriptions.loginSuccess,
+  })
+  @ApiResponse({
+    status: 401,
+    description: authSwaggerDescriptions.invalidCredentials,
+  })
   async login(@Request() req, @Res({ passthrough: true }) res: Response) {
     const { access_token, user } = await this.authService.login(req.user);
     this.setCookie(res, access_token);
@@ -39,10 +55,13 @@ export class AuthController {
   @Post('register')
   @ApiOperation({ summary: 'Register a new user' })
   @ApiBody({ type: RegisterDto })
-  @ApiResponse({ status: 201, description: 'Registration successful.' })
+  @ApiResponse({
+    status: 201,
+    description: authSwaggerDescriptions.registerSuccess,
+  })
   @ApiResponse({
     status: 400,
-    description: 'Invalid input or email already in use.',
+    description: authSwaggerDescriptions.invalidInputOrEmailInUse,
   })
   async register(
     @Body() registerDto: RegisterDto,
@@ -53,30 +72,30 @@ export class AuthController {
     return { user, message: 'Registration successful' };
   }
 
-  @UseGuards(JwtAuthGuard)
+  @UseGuards(FirebaseOrJwtAuthGuard)
   @Get('profile')
   @ApiOperation({ summary: 'Get current user profile' })
   @ApiResponse({
     status: 200,
-    description: 'User profile.',
+    description: authSwaggerDescriptions.userProfile,
     type: UserProfileResponseDto,
   })
-  @ApiResponse({ status: 401, description: 'Unauthorized.' })
+  @ApiResponse({ status: 401, description: swaggerDescriptions.unauthorized })
   getProfile(@Request() req) {
     return req.user;
   }
 
-  @UseGuards(JwtAuthGuard)
+  @UseGuards(FirebaseOrJwtAuthGuard)
   @Patch('profile')
   @ApiOperation({ summary: 'Update current user profile' })
   @ApiBody({ type: UpdateProfileDto })
   @ApiResponse({
     status: 200,
-    description: 'Profile updated.',
+    description: authSwaggerDescriptions.profileUpdated,
     type: UserProfileResponseDto,
   })
-  @ApiResponse({ status: 401, description: 'Unauthorized.' })
-  @ApiResponse({ status: 400, description: 'Invalid input.' })
+  @ApiResponse({ status: 401, description: swaggerDescriptions.unauthorized })
+  @ApiResponse({ status: 400, description: swaggerDescriptions.invalidInput })
   async updateProfile(@Request() req, @Body() dto: UpdateProfileDto) {
     return this.authService.updateProfile(req.user._id, dto);
   }
@@ -84,7 +103,10 @@ export class AuthController {
   @Get('google')
   @UseGuards(GoogleAuthGuard)
   @ApiOperation({ summary: 'Initiate Google OAuth flow' })
-  @ApiResponse({ status: 302, description: 'Redirects to Google consent.' })
+  @ApiResponse({
+    status: 302,
+    description: authSwaggerDescriptions.redirectsToGoogleConsent,
+  })
   async googleAuth() {}
 
   @Get('google/callback')
@@ -92,7 +114,7 @@ export class AuthController {
   @ApiOperation({ summary: 'Google OAuth callback' })
   @ApiResponse({
     status: 302,
-    description: 'Redirects to dashboard on success.',
+    description: authSwaggerDescriptions.redirectsToDashboardOnSuccess,
   })
   async googleAuthRedirect(
     @Request() req,
@@ -100,19 +122,24 @@ export class AuthController {
   ) {
     const { access_token } = await this.authService.login(req.user);
     this.setCookie(res, access_token);
-    res.redirect('http://localhost:5173/dashboard');
+    const frontendUrl =
+      this.configService.get<string>('FRONTEND_URL') || defaultFrontendUrl;
+    res.redirect(`${frontendUrl}/`);
   }
 
   @Post('logout')
   @ApiOperation({ summary: 'Log out current user' })
-  @ApiResponse({ status: 200, description: 'Logout successful.' })
+  @ApiResponse({
+    status: 200,
+    description: authSwaggerDescriptions.logoutSuccess,
+  })
   async logout(@Res({ passthrough: true }) res: Response) {
-    res.clearCookie('360alert_authentication');
+    res.clearCookie(authCookieName);
     return { message: 'Logged out successfully' };
   }
 
   private setCookie(res: Response, token: string) {
-    res.cookie('360alert_authentication', token, {
+    res.cookie(authCookieName, token, {
       httpOnly: true,
       secure: false,
       sameSite: 'lax',
