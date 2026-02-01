@@ -111,3 +111,79 @@
   color: var(--color-secondary) !important;
   border-color: var(--color-secondary-light) !important;
 }
+
+/* Filters accordion - matches sidebar theme */
+.filters-accordion {
+  --p-accordion-panel-border-color: var(--color-border);
+  --p-accordion-header-background: transparent;
+  --p-accordion-header-hover-background: var(--color-background);
+  --p-accordion-header-active-background: transparent;
+  --p-accordion-header-active-hover-background: var(--color-background);
+  --p-accordion-header-color: var(--color-secondary);
+  --p-accordion-header-hover-color: var(--color-primary);
+  --p-accordion-header-active-color: var(--color-secondary);
+  --p-accordion-content-background: transparent;
+  --p-accordion-content-color: var(--color-secondary);
+  --p-accordion-content-border-color: var(--color-border);
+  --p-accordion-content-padding: 0.75rem 0 0;
+}
+
+.filters-accordion .p-accordionpanel {
+  border-color: var(--color-border);
+  border-width: 0 0 1px 0;
+}
+
+.filters-accordion .p-accordionpanel:last-child {
+  border-bottom-width: 0;
+}
+
+.filters-accordion .p-accordionheader {
+  font-size: 0.8125rem;
+  font-weight: 600;
+  padding: 0.5rem 0;
+  background: transparent !important;
+  color: var(--color-secondary) !important;
+}
+
+.filters-accordion .p-accordionheader .p-accordionheader-toggle-icon {
+  color: var(--color-secondary) !important;
+}
+
+.filters-accordion .p-accordionpanel-active .p-accordionheader {
+  background: transparent !important;
+  color: var(--color-secondary) !important;
+}
+
+.filters-accordion .p-accordionpanel-active .p-accordionheader .p-accordionheader-toggle-icon {
+  color: var(--color-secondary) !important;
+}
+
+.filters-accordion .p-accordionheader:hover {
+  color: var(--color-primary) !important;
+  background: var(--color-background) !important;
+}
+
+.filters-accordion .p-accordionheader:hover .p-accordionheader-toggle-icon {
+  color: var(--color-primary) !important;
+}
+
+.filters-accordion .p-accordioncontent,
+.filters-accordion .p-accordioncontent-wrapper,
+.filters-accordion .p-accordioncontent-content {
+  background: transparent !important;
+  background-color: transparent !important;
+}
+
+.filters-accordion .p-accordioncontent-content {
+  color: var(--color-text) !important;
+}
+
+.filters-accordion .p-accordioncontent-content label,
+.filters-accordion .p-accordioncontent-content span,
+.filters-accordion .p-accordioncontent-content p {
+  color: var(--color-text) !important;
+}
+
+.filters-accordion .p-accordioncontent {
+  padding-bottom: 0.5rem;
+}

@@ -1,5 +1,9 @@
 <script setup lang="ts">
 import { ref, onMounted, computed } from 'vue';
+import Accordion from 'primevue/accordion';
+import AccordionPanel from 'primevue/accordionpanel';
+import AccordionHeader from 'primevue/accordionheader';
+import AccordionContent from 'primevue/accordioncontent';
 import Paginator from 'primevue/paginator';
 import InputNumber from 'primevue/inputnumber';
 import api from '../services/api';
@@ -54,6 +58,7 @@ const factor = ref<number>(paginationConstants.defaultPageSize);
 const total = ref(0);
 const totalPages = ref(0);
 const isFilterDrawerOpen = ref(false);
+const accordionValue = ref<string[]>(['status']);
 
 const first = computed(() => (page.value - 1) * factor.value);
 
@@ -198,9 +203,9 @@ onMounted(() => {
     <!-- Sidebar: filters panel (desktop) -->
     <aside class="hidden md:block w-72 flex-shrink-0">
       <div
-        class="bg-surface border border-border rounded-xl p-4 sticky top-32 space-y-6"
+        class="bg-surface border border-border rounded-xl p-4 sticky top-32"
       >
-        <div class="flex items-center justify-between">
+        <div class="flex items-center justify-between mb-4">
           <h2 class="text-sm font-semibold text-secondary">
             {{ $t('missing.filtersTitle') }}
           </h2>
@@ -214,8 +219,15 @@ onMounted(() => {
           </button>
         </div>
 
-        <!-- Status & Sort -->
-        <div class="space-y-3">
+        <Accordion
+          v-model:value="accordionValue"
+          multiple
+          class="filters-accordion"
+        >
+          <AccordionPanel value="status">
+            <AccordionHeader>{{ $t('filters.sectionStatus') }}</AccordionHeader>
+            <AccordionContent>
+              <div class="space-y-3">
           <label class="block text-xs font-medium text-secondary">
             {{ $t('filters.status') }}
           </label>
@@ -240,8 +252,6 @@ onMounted(() => {
             <option value="">—</option>
             <option value="recent">{{ $t('filters.recent') }}</option>
           </select>
-        </div>
-
         <!-- With sighting reports -->
         <div class="space-y-2">
           <label
@@ -256,7 +266,14 @@ onMounted(() => {
             {{ $t('filters.hasSightings') }}
           </label>
         </div>
+              </div>
+            </AccordionContent>
+          </AccordionPanel>
 
+          <AccordionPanel value="search">
+            <AccordionHeader>{{ $t('filters.sectionSearch') }}</AccordionHeader>
+            <AccordionContent>
+              <div class="space-y-4">
         <!-- Name search -->
         <div class="space-y-2">
           <label class="block text-xs font-medium text-secondary">
@@ -293,7 +310,14 @@ onMounted(() => {
             </option>
           </select>
         </div>
+              </div>
+            </AccordionContent>
+          </AccordionPanel>
 
+          <AccordionPanel value="ageDates">
+            <AccordionHeader>{{ $t('filters.sectionAgeDates') }}</AccordionHeader>
+            <AccordionContent>
+              <div class="space-y-4">
         <!-- Age range -->
         <div class="space-y-2 grid grid-cols-2 gap-2">
           <div>
@@ -359,7 +383,14 @@ onMounted(() => {
             {{ $t('form.submit') }}
           </button>
         </div>
+              </div>
+            </AccordionContent>
+          </AccordionPanel>
 
+          <AccordionPanel value="height">
+            <AccordionHeader>{{ $t('filters.sectionHeight') }}</AccordionHeader>
+            <AccordionContent>
+              <div class="space-y-2">
         <!-- Height -->
         <div class="space-y-2">
           <div class="grid grid-cols-2 gap-2">
@@ -404,7 +435,14 @@ onMounted(() => {
             {{ $t('form.submit') }}
           </button>
         </div>
+              </div>
+            </AccordionContent>
+          </AccordionPanel>
 
+          <AccordionPanel value="reward">
+            <AccordionHeader>{{ $t('filters.sectionReward') }}</AccordionHeader>
+            <AccordionContent>
+              <div class="filter-reward-section space-y-2">
         <!-- Reward -->
         <div class="filter-reward-section space-y-2">
           <label class="block text-xs font-medium text-secondary">
@@ -441,7 +479,14 @@ onMounted(() => {
             {{ $t('form.submit') }}
           </button>
         </div>
+              </div>
+            </AccordionContent>
+          </AccordionPanel>
 
+          <AccordionPanel value="physical">
+            <AccordionHeader>{{ $t('filters.sectionPhysical') }}</AccordionHeader>
+            <AccordionContent>
+              <div class="space-y-2">
         <!-- Physical: hair, eyes, build -->
         <div class="space-y-2">
           <label class="block text-xs font-medium text-secondary">
@@ -497,6 +542,10 @@ onMounted(() => {
             </option>
           </select>
         </div>
+              </div>
+            </AccordionContent>
+          </AccordionPanel>
+        </Accordion>
       </div>
     </aside>
 
@@ -649,143 +698,312 @@ onMounted(() => {
               </button>
             </div>
           </div>
-          <div class="p-4 space-y-6 overflow-y-auto">
-            <div class="space-y-2">
-              <label class="block text-xs font-medium text-secondary">
-                {{ $t('filters.status') }}
-              </label>
-              <select
-                v-model="filterForm.status"
-                class="w-full px-3 py-2 bg-background border border-border rounded-lg text-sm text-secondary"
-              >
-                <option value="">{{ $t('filters.all') }}</option>
-                <option value="missing">{{ $t('filters.missing') }}</option>
-                <option value="found">{{ $t('filters.found') }}</option>
-                <option value="deceased">{{ $t('filters.deceased') }}</option>
-              </select>
-            </div>
-            <div class="space-y-2">
-              <label
-                class="flex items-center gap-2 cursor-pointer text-sm text-secondary"
-              >
-                <input
-                  v-model="filterForm.hasSightings"
-                  type="checkbox"
-                  class="rounded border-border text-primary focus:ring-primary/20"
-                />
-                {{ $t('filters.hasSightings') }}
-              </label>
-            </div>
-            <div class="space-y-2">
-              <label class="block text-xs font-medium text-secondary">
-                {{ $t('form.name') }}
-              </label>
-              <input
-                v-model="filterForm.name"
-                type="text"
-                :placeholder="$t('filters.namePlaceholder')"
-                class="w-full px-3 py-2 bg-background border border-border rounded-lg text-sm text-secondary"
-              />
-            </div>
-            <div class="space-y-2">
-              <label class="block text-xs font-medium text-secondary">
-                {{ $t('form.gender') }}
-              </label>
-              <select
-                v-model="filterForm.gender"
-                class="w-full px-3 py-2 bg-background border border-border rounded-lg text-sm text-secondary"
-              >
-                <option value="">—</option>
-                <option v-for="g in genderOptions" :key="g" :value="g">
-                  {{ $t(`form.${g.toLowerCase()}`) }}
-                </option>
-              </select>
-            </div>
-            <div class="grid grid-cols-2 gap-2">
-              <div class="space-y-2">
-                <label class="block text-xs font-medium text-secondary">
-                  {{ $t('filters.minAge') }}
-                </label>
-                <input
-                  v-model.number="filterForm.minAge"
-                  type="number"
-                  min="0"
-                  class="w-full px-3 py-2 bg-background border border-border rounded-lg text-sm text-secondary"
-                />
-              </div>
-              <div class="space-y-2">
-                <label class="block text-xs font-medium text-secondary">
-                  {{ $t('filters.maxAge') }}
-                </label>
-                <input
-                  v-model.number="filterForm.maxAge"
-                  type="number"
-                  min="0"
-                  class="w-full px-3 py-2 bg-background border border-border rounded-lg text-sm text-secondary"
-                />
-              </div>
-            </div>
-            <div class="space-y-2">
-              <label class="block text-xs font-medium text-secondary">
-                {{ $t('form.hairColor') }}
-              </label>
-              <select
-                v-model="filterForm.hairColor"
-                class="w-full px-3 py-2 bg-background border border-border rounded-lg text-sm text-secondary"
-              >
-                <option value="">—</option>
-                <option v-for="c in hairColors" :key="c" :value="c">
-                  {{ $t(`attributes.hair.${c}`) }}
-                </option>
-              </select>
-            </div>
-            <div class="space-y-2">
-              <label class="block text-xs font-medium text-secondary">
-                {{ $t('form.eyeColor') }}
-              </label>
-              <select
-                v-model="filterForm.eyes"
-                class="w-full px-3 py-2 bg-background border border-border rounded-lg text-sm text-secondary"
-              >
-                <option value="">—</option>
-                <option v-for="e in eyeColors" :key="e" :value="e">
-                  {{ $t(`attributes.eyes.${e}`) }}
-                </option>
-              </select>
-            </div>
-            <div class="filter-reward-section space-y-2">
-              <label class="block text-xs font-medium text-secondary">
-                {{ $t('filters.minRewardAmount') }}
-              </label>
-              <InputNumber
-                v-model="filterForm.minRewardAmount"
-                mode="currency"
-                :currency="filterForm.rewardCurrency || 'USD'"
-                :locale="currencyInputLocale"
-                :min="0"
-                :placeholder="$t('form.rewardPlaceholder')"
-                fluid
-                :input-class="filterRewardInputClass"
-              />
-            </div>
-            <div class="space-y-2">
-              <label class="block text-xs font-medium text-secondary">
-                {{ $t('filters.rewardCurrency') }}
-              </label>
-              <select
-                v-model="filterForm.rewardCurrency"
-                class="w-full px-3 py-2 bg-background border border-border rounded-lg text-sm text-secondary"
-              >
-                <option value="">—</option>
-                <option v-for="code in rewardCurrencies" :key="code" :value="code">
-                  {{ $t('currencies.' + code) }}
-                </option>
-              </select>
-            </div>
+          <div class="p-4 overflow-y-auto">
+            <Accordion
+              v-model:value="accordionValue"
+              multiple
+              class="filters-accordion"
+            >
+              <AccordionPanel value="status">
+                <AccordionHeader>{{ $t('filters.sectionStatus') }}</AccordionHeader>
+                <AccordionContent>
+                  <div class="space-y-3">
+                    <div class="space-y-2">
+                      <label class="block text-xs font-medium text-secondary">
+                        {{ $t('filters.status') }}
+                      </label>
+                      <select
+                        v-model="filterForm.status"
+                        @change="applyFilters"
+                        class="w-full px-3 py-2 bg-background border border-border rounded-lg text-sm text-secondary"
+                      >
+                        <option value="">{{ $t('filters.all') }}</option>
+                        <option value="missing">{{ $t('filters.missing') }}</option>
+                        <option value="found">{{ $t('filters.found') }}</option>
+                        <option value="deceased">{{ $t('filters.deceased') }}</option>
+                      </select>
+                    </div>
+                    <div class="space-y-2">
+                      <label class="block text-xs font-medium text-secondary">
+                        {{ $t('filters.recent') }}
+                      </label>
+                      <select
+                        v-model="filterForm.sort"
+                        @change="applyFilters"
+                        class="w-full px-3 py-2 bg-background border border-border rounded-lg text-sm text-secondary"
+                      >
+                        <option value="">—</option>
+                        <option value="recent">{{ $t('filters.recent') }}</option>
+                      </select>
+                    </div>
+                    <label
+                      class="flex items-center gap-2 cursor-pointer text-sm text-secondary"
+                    >
+                      <input
+                        v-model="filterForm.hasSightings"
+                        type="checkbox"
+                        @change="applyFilters"
+                        class="rounded border-border text-primary focus:ring-primary/20"
+                      />
+                      {{ $t('filters.hasSightings') }}
+                    </label>
+                  </div>
+                </AccordionContent>
+              </AccordionPanel>
+              <AccordionPanel value="search">
+                <AccordionHeader>{{ $t('filters.sectionSearch') }}</AccordionHeader>
+                <AccordionContent>
+                  <div class="space-y-4">
+                    <div class="space-y-2">
+                      <label class="block text-xs font-medium text-secondary">
+                        {{ $t('form.name') }}
+                      </label>
+                      <input
+                        v-model="filterForm.name"
+                        type="text"
+                        :placeholder="$t('filters.namePlaceholder')"
+                        class="w-full px-3 py-2 bg-background border border-border rounded-lg text-sm text-secondary"
+                      />
+                    </div>
+                    <div class="space-y-2">
+                      <label class="block text-xs font-medium text-secondary">
+                        {{ $t('form.gender') }}
+                      </label>
+                      <select
+                        v-model="filterForm.gender"
+                        @change="applyFilters"
+                        class="w-full px-3 py-2 bg-background border border-border rounded-lg text-sm text-secondary"
+                      >
+                        <option value="">—</option>
+                        <option v-for="g in genderOptions" :key="g" :value="g">
+                          {{ $t(`form.${g.toLowerCase()}`) }}
+                        </option>
+                      </select>
+                    </div>
+                  </div>
+                </AccordionContent>
+              </AccordionPanel>
+              <AccordionPanel value="ageDates">
+                <AccordionHeader>{{ $t('filters.sectionAgeDates') }}</AccordionHeader>
+                <AccordionContent>
+                  <div class="space-y-4">
+                    <div class="space-y-2 grid grid-cols-2 gap-2">
+                      <div>
+                        <label class="block text-xs font-medium text-secondary">
+                          {{ $t('filters.minAge') }}
+                        </label>
+                        <input
+                          v-model.number="filterForm.minAge"
+                          type="number"
+                          min="0"
+                          max="150"
+                          class="w-full px-3 py-2 bg-background border border-border rounded-lg text-sm text-secondary"
+                        />
+                      </div>
+                      <div>
+                        <label class="block text-xs font-medium text-secondary">
+                          {{ $t('filters.maxAge') }}
+                        </label>
+                        <input
+                          v-model.number="filterForm.maxAge"
+                          type="number"
+                          min="0"
+                          max="150"
+                          class="w-full px-3 py-2 bg-background border border-border rounded-lg text-sm text-secondary"
+                        />
+                      </div>
+                      <button
+                        type="button"
+                        @click="applyFilters"
+                        class="col-span-2 py-2 text-sm font-medium rounded-lg border-2 border-primary text-primary hover:bg-primary/5 transition-colors"
+                      >
+                        {{ $t('form.submit') }}
+                      </button>
+                    </div>
+                    <div class="space-y-2">
+                      <label class="block text-xs font-medium text-secondary">
+                        {{ $t('filters.lastSeenFrom') }}
+                      </label>
+                      <VueDatePicker
+                        v-model="filterForm.lastSeenFrom"
+                        :enable-time-picker="false"
+                        auto-apply
+                        :teleport="true"
+                        input-class-name="!bg-background !border-border !rounded-lg !py-2 !px-3 !text-sm text-secondary"
+                      />
+                      <label class="block text-xs font-medium text-secondary">
+                        {{ $t('filters.lastSeenTo') }}
+                      </label>
+                      <VueDatePicker
+                        v-model="filterForm.lastSeenTo"
+                        :enable-time-picker="false"
+                        auto-apply
+                        :teleport="true"
+                        input-class-name="!bg-background !border-border !rounded-lg !py-2 !px-3 !text-sm text-secondary"
+                      />
+                      <button
+                        type="button"
+                        @click="applyFilters"
+                        class="w-full py-2 text-sm font-medium rounded-lg border-2 border-primary text-primary hover:bg-primary/5 transition-colors"
+                      >
+                        {{ $t('form.submit') }}
+                      </button>
+                    </div>
+                  </div>
+                </AccordionContent>
+              </AccordionPanel>
+              <AccordionPanel value="height">
+                <AccordionHeader>{{ $t('filters.sectionHeight') }}</AccordionHeader>
+                <AccordionContent>
+                  <div class="space-y-2">
+                    <div class="grid grid-cols-2 gap-2">
+                      <div>
+                        <label class="block text-xs font-medium text-secondary mb-2">
+                          {{ $t('filters.minHeight') }}
+                        </label>
+                        <input
+                          v-model.number="filterForm.minHeight"
+                          type="number"
+                          min="0"
+                          class="w-full px-3 py-2 bg-background border border-border rounded-lg text-sm text-secondary"
+                        />
+                      </div>
+                      <div>
+                        <label class="block text-xs font-medium text-secondary mb-2">
+                          {{ $t('filters.maxHeight') }}
+                        </label>
+                        <input
+                          v-model.number="filterForm.maxHeight"
+                          type="number"
+                          min="0"
+                          class="w-full px-3 py-2 bg-background border border-border rounded-lg text-sm text-secondary"
+                        />
+                      </div>
+                    </div>
+                    <label class="block text-xs font-medium text-secondary">
+                      {{ $t('filters.heightUnit') }}
+                    </label>
+                    <select
+                      v-model="filterForm.heightUnit"
+                      @change="applyFilters"
+                      class="w-full px-3 py-2 bg-background border border-border rounded-lg text-sm text-secondary"
+                    >
+                      <option v-for="u in heightUnits" :key="u" :value="u">{{ u }}</option>
+                    </select>
+                    <button
+                      type="button"
+                      @click="applyFilters"
+                      class="w-full py-2 text-sm font-medium rounded-lg border-2 border-primary text-primary hover:bg-primary/5 transition-colors"
+                    >
+                      {{ $t('form.submit') }}
+                    </button>
+                  </div>
+                </AccordionContent>
+              </AccordionPanel>
+              <AccordionPanel value="reward">
+                <AccordionHeader>{{ $t('filters.sectionReward') }}</AccordionHeader>
+                <AccordionContent>
+                  <div class="filter-reward-section space-y-2">
+                    <label class="block text-xs font-medium text-secondary">
+                      {{ $t('filters.minRewardAmount') }}
+                    </label>
+                    <InputNumber
+                      v-model="filterForm.minRewardAmount"
+                      mode="currency"
+                      :currency="filterForm.rewardCurrency || 'USD'"
+                      :locale="currencyInputLocale"
+                      :min="0"
+                      :placeholder="$t('form.rewardPlaceholder')"
+                      fluid
+                      :input-class="filterRewardInputClass"
+                    />
+                    <label class="block text-xs font-medium text-secondary">
+                      {{ $t('filters.rewardCurrency') }}
+                    </label>
+                    <select
+                      v-model="filterForm.rewardCurrency"
+                      @change="applyFilters"
+                      class="w-full px-3 py-2 bg-background border border-border rounded-lg text-sm text-secondary"
+                    >
+                      <option value="">—</option>
+                      <option v-for="code in rewardCurrencies" :key="code" :value="code">
+                        {{ $t('currencies.' + code) }}
+                      </option>
+                    </select>
+                    <button
+                      type="button"
+                      @click="applyFilters"
+                      class="w-full py-2 text-sm font-medium rounded-lg border-2 border-primary text-primary hover:bg-primary/5 transition-colors"
+                    >
+                      {{ $t('form.submit') }}
+                    </button>
+                  </div>
+                </AccordionContent>
+              </AccordionPanel>
+              <AccordionPanel value="physical">
+                <AccordionHeader>{{ $t('filters.sectionPhysical') }}</AccordionHeader>
+                <AccordionContent>
+                  <div class="space-y-2">
+                    <label class="block text-xs font-medium text-secondary">
+                      {{ $t('form.hairColor') }}
+                    </label>
+                    <select
+                      v-model="filterForm.hairColor"
+                      @change="applyFilters"
+                      class="w-full px-3 py-2 bg-background border border-border rounded-lg text-sm text-secondary"
+                    >
+                      <option value="">—</option>
+                      <option v-for="c in hairColors" :key="c" :value="c">
+                        {{ $t(`attributes.hair.${c}`) }}
+                      </option>
+                    </select>
+                    <label class="block text-xs font-medium text-secondary">
+                      {{ $t('form.hairLength') }}
+                    </label>
+                    <select
+                      v-model="filterForm.hairLength"
+                      @change="applyFilters"
+                      class="w-full px-3 py-2 bg-background border border-border rounded-lg text-sm text-secondary"
+                    >
+                      <option value="">—</option>
+                      <option v-for="l in hairLengths" :key="l" :value="l">
+                        {{ $t(`attributes.length.${l}`) }}
+                      </option>
+                    </select>
+                    <label class="block text-xs font-medium text-secondary">
+                      {{ $t('form.eyeColor') }}
+                    </label>
+                    <select
+                      v-model="filterForm.eyes"
+                      @change="applyFilters"
+                      class="w-full px-3 py-2 bg-background border border-border rounded-lg text-sm text-secondary"
+                    >
+                      <option value="">—</option>
+                      <option v-for="e in eyeColors" :key="e" :value="e">
+                        {{ $t(`attributes.eyes.${e}`) }}
+                      </option>
+                    </select>
+                    <label class="block text-xs font-medium text-secondary">
+                      {{ $t('form.build') }}
+                    </label>
+                    <select
+                      v-model="filterForm.build"
+                      @change="applyFilters"
+                      class="w-full px-3 py-2 bg-background border border-border rounded-lg text-sm text-secondary"
+                    >
+                      <option value="">—</option>
+                      <option v-for="b in buildTypes" :key="b" :value="b">
+                        {{ $t(`attributes.build.${b}`) }}
+                      </option>
+                    </select>
+                  </div>
+                </AccordionContent>
+              </AccordionPanel>
+            </Accordion>
             <button
               type="button"
               @click="applyFilters"
-              class="w-full py-3 text-sm font-bold rounded-xl bg-primary text-white hover:opacity-90 transition-opacity"
+              class="w-full mt-4 py-3 text-sm font-bold rounded-xl bg-primary text-white hover:opacity-90 transition-opacity"
             >
               {{ $t('form.submit') }}
             </button>
