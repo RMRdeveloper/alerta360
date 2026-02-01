@@ -26,7 +26,6 @@ import {
   caseDetailZoom,
   userLocationRadius,
 } from '../constants/map.constants';
-import { whatsappShareBaseUrl, whatsappColor } from '../constants/share.constants';
 import type { MissingPerson } from '../types';
 import { formatDate as formatDateUtil } from '../utils';
 import { useGoogleMaps } from './useGoogleMaps';
@@ -178,24 +177,9 @@ export function useRiskMap() {
       : `<div style="width:100%;height:60px;background:rgba(55,65,81,0.5);display:flex;align-items:center;justify-content:center;color:#9ca3af;font-size:11px;">${noPhotoLabel}</div>`;
 
     const personDetailUrl = `${window.location.origin}${routePaths.missingPersonDetail(person._id)}`;
-    const shareMessage = t('riskMap.shareMessage', {
-      name: person.name,
-      age: person.age,
-      years: t('riskMap.years'),
-      location: person.lastSeenLocation,
-      contactPrompt: t('riskMap.contactPrompt'),
-    });
-    const shareText = encodeURIComponent(`🔴 ${shareMessage}\n${personDetailUrl}`);
-    const whatsappUrl = `${whatsappShareBaseUrl}${shareText}`;
+    const shareLabel = t('share.title');
 
     return `
-      <style>
-        .gm-style-iw-c { background: transparent !important; padding: 0 !important; box-shadow: none !important; }
-        .gm-style-iw-d { overflow: visible !important; }
-        .gm-style-iw-tc { display: none !important; }
-        .gm-ui-hover-effect { top: 4px !important; right: 4px !important; }
-        .gm-ui-hover-effect > span { background-color: #fff !important; }
-      </style>
       <div style="font-family:system-ui;width:200px;background:rgba(0,0,0,0.8);backdrop-filter:blur(16px);border-radius:12px;overflow:hidden;border:1px solid rgba(255,255,255,0.1);box-shadow:0 20px 40px rgba(0,0,0,0.6);">
         ${photoHtml}
         <div style="padding:10px;">
@@ -209,8 +193,8 @@ export function useRiskMap() {
             <a href="${personDetailUrl}" style="flex:1;text-align:center;background:linear-gradient(135deg,#ef4444,#dc2626);color:#fff;padding:6px;border-radius:6px;text-decoration:none;font-size:10px;font-weight:600;">
               ${t('riskMap.viewCase')}
             </a>
-            <a href="${whatsappUrl}" target="_blank" style="display:flex;align-items:center;justify-content:center;background:${whatsappColor};color:#fff;padding:6px 10px;border-radius:6px;text-decoration:none;">
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M.057 24l1.687-6.163c-1.041-1.804-1.588-3.849-1.587-5.946.003-6.556 5.338-11.891 11.893-11.891 3.181.001 6.167 1.24 8.413 3.488 2.245 2.248 3.481 5.236 3.48 8.414-.003 6.557-5.338 11.892-11.893 11.892-1.99-.001-3.951-.5-5.688-1.448l-6.305 1.654zm6.597-3.807c1.676.995 3.276 1.591 5.392 1.592 5.448 0 9.886-4.434 9.889-9.885.002-5.462-4.415-9.89-9.881-9.892-5.452 0-9.887 4.434-9.889 9.884-.001 2.225.651 3.891 1.746 5.634l-.999 3.648 3.742-.981zm11.387-5.464c-.074-.124-.272-.198-.57-.347-.297-.149-1.758-.868-2.031-.967-.272-.099-.47-.149-.669.149-.198.297-.768.967-.941 1.165-.173.198-.347.223-.644.074-.297-.149-1.255-.462-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.297-.347.446-.521.151-.172.2-.296.3-.495.099-.198.05-.372-.025-.521-.075-.148-.669-1.611-.916-2.206-.242-.579-.487-.501-.669-.51l-.57-.01c-.198 0-.52.074-.792.372-.272.297-1.04 1.017-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.095 3.2 5.076 4.487.709.306 1.263.489 1.694.626.712.226 1.36.194 1.872.118.571-.085 1.758-.719 2.006-1.413.248-.695.248-1.29.173-1.414z"/></svg>
+            <a href="#" data-share-person-id="${person._id}" role="button" aria-label="${shareLabel}" style="display:flex;align-items:center;justify-content:center;background:rgba(255,255,255,0.15);color:#fff;padding:6px 10px;border-radius:6px;text-decoration:none;border:1px solid rgba(255,255,255,0.2);">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>
             </a>
           </div>
         </div>

@@ -564,7 +564,7 @@ onMounted(() => {
           />
         </div>
 
-        <div v-if="total > 0" class="flex justify-center">
+        <div v-if="total > 0" class="flex justify-center app-paginator">
           <Paginator
             v-model:first="first"
             :rows="factor"
@@ -764,18 +764,3 @@ onMounted(() => {
     </Teleport>
   </div>
 </template>
-
-<style scoped>
-/* Override PrimeVue InputNumber - match filter panel (light bg, no dark theme) */
-.filter-reward-section :deep(.p-inputnumber-input),
-.filter-reward-section :deep(.p-inputtext.p-inputnumber-input) {
-  background-color: var(--color-background) !important;
-  color: var(--color-secondary) !important;
-  border-color: var(--color-border) !important;
-}
-
-.filter-reward-section :deep(.p-inputnumber-input::placeholder),
-.filter-reward-section :deep(.p-inputtext.p-inputnumber-input::placeholder) {
-  color: var(--color-text-light) !important;
-}
-</style>

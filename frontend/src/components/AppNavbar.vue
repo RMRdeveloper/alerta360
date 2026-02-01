@@ -172,20 +172,3 @@ const displayName = computed(() => {
     </div>
   </header>
 </template>
-
-<style scoped>
-.animate-fade-in-down {
-  animation: fadeInDown 0.2s ease-out;
-}
-
-@keyframes fadeInDown {
-  from {
-    opacity: 0;
-    transform: translateY(-10px) scale(0.95);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0) scale(1);
-  }
-}
-</style>

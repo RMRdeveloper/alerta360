@@ -6,9 +6,12 @@ const copiedTooltipDurationMs = 2000;
 export function useShareProfile(
   person: Ref<MissingPerson | null>,
   getShareMessage: () => string,
+  getShareUrl?: () => string,
 ) {
   const isShareModalOpen = ref(false);
   const showCopiedTooltip = ref(false);
+
+  const getUrl = () => (getShareUrl ? getShareUrl() : window.location.href);
 
   const shareProfile = async () => {
     if (!person.value) return;
@@ -16,7 +19,7 @@ export function useShareProfile(
     const shareData = {
       title: `Alerta360: ${person.value.name}`,
       text: getShareMessage(),
-      url: window.location.href,
+      url: getUrl(),
     };
 
     if (navigator.share) {
@@ -31,7 +34,7 @@ export function useShareProfile(
   };
 
   const copyLink = () => {
-    navigator.clipboard.writeText(window.location.href);
+    navigator.clipboard.writeText(getUrl());
     showCopiedTooltip.value = true;
     setTimeout(() => {
       showCopiedTooltip.value = false;
@@ -41,7 +44,7 @@ export function useShareProfile(
   const shareToSocial = (network: string) => {
     if (!person.value) return;
 
-    const url = encodeURIComponent(window.location.href);
+    const url = encodeURIComponent(getUrl());
     const text = encodeURIComponent(getShareMessage());
 
     let shareUrl = '';

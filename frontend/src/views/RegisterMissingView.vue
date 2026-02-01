@@ -136,6 +136,18 @@ const handleNextStep3 = (activateCallback: (step: string) => void) => {
   if (validateStep3()) activateCallback('4');
 };
 
+const isFormValid = computed(
+  () => validateStep1() && validateStep3(),
+);
+
+const handleSave = () => {
+  if (!isFormValid.value) {
+    alert(t('form.validationRequired'));
+    return;
+  }
+  submitForm();
+};
+
 const loadExistingData = async () => {
   if (!isEditMode.value || !editId.value) return;
   loadingData.value = true;
@@ -360,7 +372,17 @@ const closeConfirmationAndViewProfile = () => {
                 </div>
               </div>
             </div>
-            <div class="flex pt-6 justify-end">
+            <div class="flex pt-6 justify-end gap-3">
+              <Button
+                v-if="isEditMode"
+                :label="loading ? $t('form.submitting') : $t('form.save')"
+                severity="secondary"
+                icon="pi pi-save"
+                iconPos="left"
+                :loading="loading"
+                :disabled="loading || !isFormValid"
+                @click="handleSave"
+              />
               <Button :label="$t('form.next')" icon="pi pi-arrow-right" iconPos="right" @click="handleNextStep1(activateCallback)" />
             </div>
           </StepPanel>
@@ -412,7 +434,19 @@ const closeConfirmationAndViewProfile = () => {
             </div>
             <div class="flex pt-6 justify-between">
               <Button :label="$t('form.back')" severity="secondary" icon="pi pi-arrow-left" @click="activateCallback('1')" />
-              <Button :label="$t('form.next')" icon="pi pi-arrow-right" iconPos="right" @click="activateCallback('3')" />
+              <div class="flex gap-3">
+                <Button
+                  v-if="isEditMode"
+                  :label="loading ? $t('form.submitting') : $t('form.save')"
+                  severity="secondary"
+                  icon="pi pi-save"
+                  iconPos="left"
+                  :loading="loading"
+                  :disabled="loading || !isFormValid"
+                  @click="handleSave"
+                />
+                <Button :label="$t('form.next')" icon="pi pi-arrow-right" iconPos="right" @click="activateCallback('3')" />
+              </div>
             </div>
           </StepPanel>
 
@@ -447,7 +481,19 @@ const closeConfirmationAndViewProfile = () => {
             </div>
             <div class="flex pt-6 justify-between">
               <Button :label="$t('form.back')" severity="secondary" icon="pi pi-arrow-left" @click="activateCallback('2')" />
-              <Button :label="$t('form.next')" icon="pi pi-arrow-right" iconPos="right" @click="handleNextStep3(activateCallback)" />
+              <div class="flex gap-3">
+                <Button
+                  v-if="isEditMode"
+                  :label="loading ? $t('form.submitting') : $t('form.save')"
+                  severity="secondary"
+                  icon="pi pi-save"
+                  iconPos="left"
+                  :loading="loading"
+                  :disabled="loading || !isFormValid"
+                  @click="handleSave"
+                />
+                <Button :label="$t('form.next')" icon="pi pi-arrow-right" iconPos="right" @click="handleNextStep3(activateCallback)" />
+              </div>
             </div>
           </StepPanel>
 
@@ -599,39 +645,3 @@ const closeConfirmationAndViewProfile = () => {
     </div>
   </div>
 </template>
-
-<style scoped>
-/* Override PrimeVue stepper - remove dark background, scrollbar; match app theme */
-.register-stepper-panels :deep(.p-stepper),
-.register-stepper-panels :deep(.p-steppanels),
-.register-stepper-panels :deep([data-pc-section]),
-.register-stepper-panels :deep(.p-steppanel) {
-  background: transparent !important;
-  overflow: visible !important;
-}
-
-/* Override PrimeVue primary button (Siguiente, Enviar) - red bg, white text */
-.register-stepper-panels :deep(.p-button:not(.p-button-secondary)) {
-  background: var(--color-primary) !important;
-  color: white !important;
-  border: none !important;
-}
-
-.register-stepper-panels :deep(.p-button:not(.p-button-secondary):hover) {
-  background: var(--color-primary-dark) !important;
-  color: white !important;
-}
-
-/* Override PrimeVue secondary button (Atrás) - match app theme */
-.register-stepper-panels :deep(.p-button.p-button-secondary) {
-  background: var(--color-surface) !important;
-  color: var(--color-secondary) !important;
-  border: 2px solid var(--color-border) !important;
-}
-
-.register-stepper-panels :deep(.p-button.p-button-secondary:hover) {
-  background: var(--color-background) !important;
-  color: var(--color-secondary) !important;
-  border-color: var(--color-secondary-light) !important;
-}
-</style>

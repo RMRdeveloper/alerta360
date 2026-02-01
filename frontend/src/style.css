@@ -1,4 +1,7 @@
 @import "tailwindcss";
+@import "./styles/primevue-overrides.css";
+@import "./styles/animations.css";
+@import "./styles/gm-info-window.css";
 
 :root {
   /* Modern Palette - High Contrast */

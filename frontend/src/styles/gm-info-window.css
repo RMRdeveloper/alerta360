@@ -1,0 +1,24 @@
+/* Google Maps InfoWindow customization */
+
+.gm-style-iw-c {
+  background: transparent !important;
+  padding: 0 !important;
+  box-shadow: none !important;
+}
+
+.gm-style-iw-d {
+  overflow: visible !important;
+}
+
+.gm-style-iw-tc {
+  display: none !important;
+}
+
+.gm-ui-hover-effect {
+  top: 4px !important;
+  right: 4px !important;
+}
+
+.gm-ui-hover-effect > span {
+  background-color: #fff !important;
+}

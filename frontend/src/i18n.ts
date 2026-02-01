@@ -114,6 +114,8 @@ const messages = {
     form: {
       submit: 'Submit',
       submitting: 'Submitting...',
+      save: 'Save',
+      validationRequired: 'Please complete the required fields before saving.',
       next: 'Next',
       back: 'Back',
       name: 'Name',
@@ -427,6 +429,8 @@ const messages = {
     form: {
       submit: 'Enviar',
       submitting: 'Enviando...',
+      save: 'Guardar',
+      validationRequired: 'Complete los campos obligatorios antes de guardar.',
       next: 'Siguiente',
       back: 'Atrás',
       name: 'Nombre',

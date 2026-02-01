@@ -1,0 +1,113 @@
+/* PrimeVue overrides - app theme (white, black, red) */
+
+/* App Paginator */
+.app-paginator .p-paginator {
+  background: var(--color-surface) !important;
+  color: var(--color-secondary) !important;
+  padding: 0.25rem 0.5rem !important;
+  gap: 0.25rem !important;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+}
+
+.app-paginator .p-paginator-content {
+  gap: 0.25rem !important;
+}
+
+.app-paginator .p-paginator-page,
+.app-paginator .p-paginator-first,
+.app-paginator .p-paginator-prev,
+.app-paginator .p-paginator-next,
+.app-paginator .p-paginator-last {
+  background: var(--color-surface) !important;
+  color: var(--color-secondary) !important;
+  border-color: var(--color-border) !important;
+  min-width: 1.75rem !important;
+  height: 1.75rem !important;
+  padding: 0 0.375rem !important;
+  font-size: 0.8125rem !important;
+}
+
+.app-paginator .p-paginator-page:hover,
+.app-paginator .p-paginator-first:hover,
+.app-paginator .p-paginator-prev:hover,
+.app-paginator .p-paginator-next:hover,
+.app-paginator .p-paginator-last:hover {
+  background: var(--color-background) !important;
+  border-color: var(--color-primary) !important;
+  color: var(--color-primary) !important;
+}
+
+.app-paginator .p-paginator-page-selected {
+  background: var(--color-primary) !important;
+  color: white !important;
+  border-color: var(--color-primary) !important;
+}
+
+.app-paginator .p-paginator-current {
+  color: var(--color-secondary) !important;
+  font-size: 0.8125rem !important;
+}
+
+.app-paginator .p-paginator-rpp-dropdown,
+.app-paginator .p-paginator .p-select,
+.app-paginator .p-paginator .p-inputwrapper {
+  background: var(--color-surface) !important;
+  color: var(--color-secondary) !important;
+  min-height: 1.75rem !important;
+  font-size: 0.8125rem !important;
+}
+
+.app-paginator .p-paginator-rpp-dropdown .p-select-label,
+.app-paginator .p-paginator .p-select .p-select-label,
+.app-paginator .p-paginator .p-select .p-inputtext,
+.app-paginator .p-paginator .p-inputwrapper input {
+  background: transparent !important;
+  color: var(--color-secondary) !important;
+  font-size: 0.8125rem !important;
+  min-height: 1.75rem !important;
+}
+
+/* Filter reward section - InputNumber */
+.filter-reward-section .p-inputnumber-input,
+.filter-reward-section .p-inputtext.p-inputnumber-input {
+  background-color: var(--color-background) !important;
+  color: var(--color-secondary) !important;
+  border-color: var(--color-border) !important;
+}
+
+.filter-reward-section .p-inputnumber-input::placeholder,
+.filter-reward-section .p-inputtext.p-inputnumber-input::placeholder {
+  color: var(--color-text-light) !important;
+}
+
+/* Register stepper panels - Stepper and Button */
+.register-stepper-panels .p-stepper,
+.register-stepper-panels .p-steppanels,
+.register-stepper-panels [data-pc-section],
+.register-stepper-panels .p-steppanel {
+  background: transparent !important;
+  overflow: visible !important;
+}
+
+.register-stepper-panels .p-button:not(.p-button-secondary) {
+  background: var(--color-primary) !important;
+  color: white !important;
+  border: none !important;
+}
+
+.register-stepper-panels .p-button:not(.p-button-secondary):hover {
+  background: var(--color-primary-dark) !important;
+  color: white !important;
+}
+
+.register-stepper-panels .p-button.p-button-secondary {
+  background: var(--color-surface) !important;
+  color: var(--color-secondary) !important;
+  border: 2px solid var(--color-border) !important;
+}
+
+.register-stepper-panels .p-button.p-button-secondary:hover {
+  background: var(--color-background) !important;
+  color: var(--color-secondary) !important;
+  border-color: var(--color-secondary-light) !important;
+}

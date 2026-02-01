@@ -2,14 +2,20 @@
 import { ref, computed, onMounted, watch } from 'vue';
 import { useRiskMap, type TimeFilter } from '../composables/useRiskMap';
 import { useGeolocation } from '../composables/useGeolocation';
+import { useShareProfile } from '../composables/useShareProfile';
+import { useI18n } from 'vue-i18n';
 import api from '../services/api';
 import { apiRoutes, paginationConstants } from '../constants/api.constants';
+import { routePaths } from '../constants/routes.constants';
 import { missingStatus } from '../constants/filter.constants';
 import type { MissingPerson } from '../types';
 import MissingPersonSelector from '../components/MissingPersonSelector.vue';
 import { usePhotoUrl } from '../composables/usePhotoUrl';
+import { formatDate } from '../utils';
 
+const { t, locale } = useI18n();
 const mapContainer = ref<HTMLElement | null>(null);
+const shareModalPerson = ref<MissingPerson | null>(null);
 const isDrawerOpen = ref(false);
 const { 
   isLoading, 
@@ -23,9 +29,50 @@ const {
   setTimeFilter,
   closeReportModal,
   getFilteredCases,
-  panToCase
+  panToCase,
 } = useRiskMap();
 const { getCurrentPosition, loading: geoLoading } = useGeolocation();
+
+const getShareMessage = () => {
+  if (!shareModalPerson.value) return '';
+  return t('share.message', {
+    name: shareModalPerson.value.name,
+    date: formatDate(shareModalPerson.value.lastSeenDate, locale.value, 'long'),
+  });
+};
+
+const getShareUrl = () => {
+  if (!shareModalPerson.value) return '';
+  return `${window.location.origin}${routePaths.missingPersonDetail(shareModalPerson.value._id)}`;
+};
+
+const {
+  shareProfile,
+  copyLink,
+  shareToSocial,
+  isShareModalOpen,
+  showCopiedTooltip,
+} = useShareProfile(shareModalPerson, getShareMessage, getShareUrl);
+
+const handleMapContainerClick = (event: MouseEvent) => {
+  const shareButton = (event.target as HTMLElement).closest('[data-share-person-id]');
+  if (!shareButton) return;
+
+  event.preventDefault();
+  const personId = shareButton.getAttribute('data-share-person-id');
+  if (!personId) return;
+
+  const person = getFilteredCases().find((p) => p._id === personId);
+  if (!person) return;
+
+  shareModalPerson.value = person;
+  shareProfile();
+};
+
+const handleCloseShareModal = () => {
+  isShareModalOpen.value = false;
+  shareModalPerson.value = null;
+};
 
 const filters: { label: string; value: TimeFilter }[] = [
   { label: 'riskMap.filterAll', value: 'all' },
@@ -155,7 +202,7 @@ onMounted(() => {
       <p class="text-red-400">{{ errorMessage }}</p>
     </div>
 
-    <div ref="mapContainer" class="w-full h-full"></div>
+    <div ref="mapContainer" class="w-full h-full" @click="handleMapContainerClick"></div>
 
     <!-- Time Filter Chips -->
     <div class="absolute top-28 left-1/2 -translate-x-1/2 z-10">
@@ -281,6 +328,48 @@ onMounted(() => {
         </div>
       </div>
     </Teleport>
+    <!-- Share Modal -->
+    <div
+      v-if="isShareModalOpen"
+      class="absolute inset-0 z-[100] flex items-center justify-center bg-black/60 backdrop-blur-sm p-4"
+      @click.self="handleCloseShareModal"
+    >
+      <div class="bg-surface rounded-3xl p-8 max-w-md w-full shadow-2xl border border-white">
+        <div class="flex justify-between items-center mb-6">
+          <h3 class="text-2xl font-bold text-secondary">{{ $t('share.title') }}</h3>
+          <button @click="handleCloseShareModal" class="text-light hover:text-secondary transition-colors">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+            </svg>
+          </button>
+        </div>
+        <div class="space-y-4">
+          <button @click="shareToSocial('whatsapp')" class="w-full flex items-center gap-4 p-4 rounded-xl bg-[#25D366]/10 text-[#25D366] hover:bg-[#25D366]/20 transition-all font-bold">
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="currentColor"><path d="M.057 24l1.687-6.163c-1.041-1.804-1.588-3.849-1.587-5.946.003-6.556 5.338-11.891 11.893-11.891 3.181.001 6.167 1.24 8.413 3.488 2.245 2.248 3.481 5.236 3.48 8.414-.003 6.557-5.338 11.892-11.893 11.892-1.99-.001-3.951-.5-5.688-1.448l-6.305 1.654zm6.597-3.807c1.676.995 3.276 1.591 5.392 1.592 5.448 0 9.886-4.434 9.889-9.885.002-5.462-4.415-9.89-9.881-9.892-5.452 0-9.887 4.434-9.889 9.884-.001 2.225.651 3.891 1.746 5.634l-.999 3.648 3.742-.981zm11.387-5.464c-.074-.124-.272-.198-.57-.347-.297-.149-1.758-.868-2.031-.967-.272-.099-.47-.149-.669.149-.198.297-.768.967-.941 1.165-.173.198-.347.223-.644.074-.297-.149-1.255-.462-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.297-.347.446-.521.151-.172.2-.296.3-.495.099-.198.05-.372-.025-.521-.075-.148-.669-1.611-.916-2.206-.242-.579-.487-.501-.669-.51l-.57-.01c-.198 0-.52.074-.792.372-.272.297-1.04 1.017-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.095 3.2 5.076 4.487.709.306 1.263.489 1.694.626.712.226 1.36.194 1.872.118.571-.085 1.758-.719 2.006-1.413.248-.695.248-1.29.173-1.414z"/></svg>
+            {{ $t('share.whatsapp') }}
+          </button>
+          <button @click="shareToSocial('facebook')" class="w-full flex items-center gap-4 p-4 rounded-xl bg-[#1877F2]/10 text-[#1877F2] hover:bg-[#1877F2]/20 transition-all font-bold">
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="currentColor"><path d="M9 8h-3v4h3v12h5v-12h3.642l.358-4h-4v-1.667c0-.955.192-1.333 1.115-1.333h2.885v-5h-3.808c-3.596 0-5.192 1.583-5.192 4.615v3.385z"/></svg>
+            {{ $t('share.facebook') }}
+          </button>
+          <button @click="shareToSocial('twitter')" class="w-full flex items-center gap-4 p-4 rounded-xl bg-black/5 text-black hover:bg-black/10 transition-all font-bold">
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="currentColor"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
+            {{ $t('share.twitter') }}
+          </button>
+          <hr class="border-border/50" />
+          <button @click="copyLink" class="w-full flex items-center justify-between p-4 rounded-xl bg-gray-50 text-secondary hover:bg-gray-100 transition-all font-bold border border-border">
+            <div class="flex items-center gap-4">
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />
+              </svg>
+              {{ $t('share.copyLink') }}
+            </div>
+            <span v-if="showCopiedTooltip" class="text-xs bg-green-500 text-white px-2 py-1 rounded-md">{{ $t('share.copied') }}</span>
+          </button>
+        </div>
+      </div>
+    </div>
+
     <!-- Report Modal -->
     <div 
       v-if="mapClickCoords" 

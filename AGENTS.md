@@ -12,7 +12,7 @@ Requisitos: Node 18+, MongoDB. Variables de entorno vía `.env` (no commitear; u
 ## 2. Estructura del proyecto
 
 - **Backend** (`backend/`): Módulos por dominio bajo `src/` (ej. `missing-persons/`, `children/`, `sightings/`, `auth/`). Por módulo: `*.controller.ts`, `*.service.ts`, `*.module.ts`, `dto/` (create-*.dto.ts), `schemas/` (Mongoose).
-- **Frontend** (`frontend/src/`): `views/` (páginas, sufijo `*View.vue`), `components/`, `composables/` (use*.ts), `services/`, `stores/`, `router/`, `types/`, `layouts/`.
+- **Frontend** (`frontend/src/`): `views/` (páginas, sufijo `*View.vue`), `components/`, `composables/` (use*.ts), `services/`, `stores/`, `router/`, `types/`, `layouts/`, `styles/` (customizaciones CSS por dominio).
 - **Funciones utilitarias**: Centralizar en `utils.ts` (o `utils.js` si el módulo o proyecto usa JavaScript). En backend: `src/utils.ts` o `src/utils/`; en frontend: `src/utils.ts` o `src/utils/`. Funciones puras, de formateo o helpers reutilizables que no encajan en un módulo de dominio ni como composable.
 
 ## 3. Convenciones Backend (NestJS)
@@ -29,6 +29,7 @@ Requisitos: Node 18+, MongoDB. Variables de entorno vía `.env` (no commitear; u
 - **Composables**: Prefijo `use` + PascalCase en archivo (ej. `useGeolocation.ts`, `useRiskMap.ts`). Siempre considerar si algo debe ser un composable antes que dejar funciones o métodos sueltos en vistas o componentes; extraer lógica reutilizable o con responsabilidad clara a un composable, siguiendo SRP, DRY y KISS.
 - **Script**: Preferir `<script setup lang="ts">` y Composition API; TypeScript en tipos y servicios.
 - **Estilos**: Tailwind CSS; clases en el template; evitar estilos inline salvo casos necesarios.
+- **Estilos de customización**: No dejar estilos sueltos en vistas ni componentes para personalizar elementos puntuales (overrides de PrimeVue, animaciones custom, etc.). Centralizarlos en `frontend/src/styles/` con ficheros segregados por dominio (ej. `primevue-overrides.css`, `animations.css`, `gm-info-window.css`). Las vistas y componentes solo usan las clases en el template; la definición CSS vive en esos ficheros, importados desde `style.css`.
 - **i18n**: Soporte ES/EN; usar claves de traducción en lugar de texto fijo en la UI cuando corresponda.
 
 ## 5. Comandos útiles
